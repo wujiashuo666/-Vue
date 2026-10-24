@@ -32,11 +32,6 @@
             <groupId>org.flywaydb</groupId>
             <artifactId>flyway-mysql</artifactId>
         </dependency>
-        <dependency>
-            <groupId>com.alibaba</groupId>
-            <artifactId>druid-spring-boot-4-starter</artifactId>
-            <version>${druid.version}</version>
-        </dependency>
     </dependencies>
 
     <build>

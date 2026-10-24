@@ -114,4 +114,26 @@
       remark = #{remark,jdbcType=VARCHAR}
     where id = #{id,jdbcType=INTEGER}
   </update>
+
+  <select id="getMvByPage" resultType="java.util.HashMap">
+    SELECT r.id, r.eid, e.name AS empName, d.name AS afterDepName, j.name AS afterJobName,
+           r.removeDate, r.reason, r.remark
+    FROM employeeremove r
+    LEFT JOIN employee e ON r.eid = e.id
+    LEFT JOIN department d ON r.afterDepId = d.id
+    LEFT JOIN joblevel j ON r.afterJobId = j.id
+    <if test="name != null and name != ''">
+      WHERE e.name LIKE CONCAT('%', #{name}, '%')
+    </if>
+    ORDER BY r.removeDate DESC
+    LIMIT #{page}, #{size}
+  </select>
+
+  <select id="getMvTotal" resultType="java.lang.Long">
+    SELECT COUNT(*)
+    FROM employeeremove r LEFT JOIN employee e ON r.eid = e.id
+    <if test="name != null and name != ''">
+      WHERE e.name LIKE CONCAT('%', #{name}, '%')
+    </if>
+  </select>
 </mapper>

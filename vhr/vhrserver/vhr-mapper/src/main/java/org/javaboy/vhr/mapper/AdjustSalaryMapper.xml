@@ -114,4 +114,22 @@
       remark = #{remark,jdbcType=VARCHAR}
     where id = #{id,jdbcType=INTEGER}
   </update>
+
+  <select id="getAsByPage" resultType="java.util.HashMap">
+    SELECT a.id, a.eid, e.name AS empName, a.asDate, a.beforeSalary, a.afterSalary, a.reason, a.remark
+    FROM adjustsalary a LEFT JOIN employee e ON a.eid = e.id
+    <if test="name != null and name != ''">
+      WHERE e.name LIKE CONCAT('%', #{name}, '%')
+    </if>
+    ORDER BY a.asDate DESC
+    LIMIT #{page}, #{size}
+  </select>
+
+  <select id="getAsTotal" resultType="java.lang.Long">
+    SELECT COUNT(*)
+    FROM adjustsalary a LEFT JOIN employee e ON a.eid = e.id
+    <if test="name != null and name != ''">
+      WHERE e.name LIKE CONCAT('%', #{name}, '%')
+    </if>
+  </select>
 </mapper>

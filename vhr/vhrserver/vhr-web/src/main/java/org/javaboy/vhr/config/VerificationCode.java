@@ -10,17 +10,6 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.security.SecureRandom;
 
-/**
- * @作者 江南一点雨
- * @公众号 江南一点雨
- * @微信号 a_java_boy
- * @GitHub https://github.com/lenve
- * @博客 http://wangsong.blog.csdn.net
- * @网站 http://www.javaboy.org
- * @时间 2019-09-29 7:37
- *
- * 生成验证码的工具类
- */
 public class VerificationCode {
     /**
      * 验证码图片宽度（像素）

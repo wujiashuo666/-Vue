@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="org.javaboy.vhr.mapper.EsportsMapper" >
+
+  <resultMap id="EsTeamMap" type="org.javaboy.vhr.model.EsTeam" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="name" property="name" jdbcType="VARCHAR" />
+    <result column="short_name" property="shortName" jdbcType="VARCHAR" />
+    <result column="region" property="region" jdbcType="VARCHAR" />
+    <result column="world_rank" property="worldRank" jdbcType="INTEGER" />
+    <result column="color1" property="color1" jdbcType="VARCHAR" />
+    <result column="color2" property="color2" jdbcType="VARCHAR" />
+  </resultMap>
+
+  <resultMap id="EsPlayerMap" type="org.javaboy.vhr.model.EsPlayer" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="team_id" property="teamId" jdbcType="INTEGER" />
+    <result column="nick" property="nick" jdbcType="VARCHAR" />
+    <result column="real_name" property="name" jdbcType="VARCHAR" />
+    <result column="country" property="country" jdbcType="VARCHAR" />
+    <result column="rating" property="rating" jdbcType="DECIMAL" />
+    <result column="kd" property="kd" jdbcType="DECIMAL" />
+    <result column="adr" property="adr" jdbcType="DECIMAL" />
+    <result column="kast" property="kast" jdbcType="DECIMAL" />
+    <result column="maps_cnt" property="maps" jdbcType="INTEGER" />
+  </resultMap>
+
+  <resultMap id="EsTournamentMap" type="org.javaboy.vhr.model.EsTournament" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="name" property="name" jdbcType="VARCHAR" />
+  </resultMap>
+
+  <!-- 比赛含逐图比分：用于战绩推导（实体） -->
+  <resultMap id="EsMatchWithMaps" type="org.javaboy.vhr.model.EsMatch" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="tournament_id" property="tournamentId" jdbcType="INTEGER" />
+    <result column="stage" property="stage" jdbcType="VARCHAR" />
+    <result column="bo" property="bo" jdbcType="INTEGER" />
+    <result column="team1_id" property="team1Id" jdbcType="INTEGER" />
+    <result column="team2_id" property="team2Id" jdbcType="INTEGER" />
+    <result column="status" property="status" jdbcType="VARCHAR" />
+    <result column="start_time" property="startTime" jdbcType="TIMESTAMP" />
+    <collection property="maps" ofType="org.javaboy.vhr.model.EsMatchMap" >
+      <id column="m_id" property="id" jdbcType="INTEGER" />
+      <result column="m_map_order" property="mapOrder" jdbcType="INTEGER" />
+      <result column="m_map_name" property="name" jdbcType="VARCHAR" />
+      <result column="m_score1" property="score1" jdbcType="INTEGER" />
+      <result column="m_score2" property="score2" jdbcType="INTEGER" />
+      <result column="m_live" property="live" jdbcType="BIT" />
+    </collection>
+  </resultMap>
+
+  <!-- 比赛返回对象：带赛事名 + 逐图比分，start_time 直接输出 ISO 字符串 -->
+  <resultMap id="EsMatchVOResult" type="org.javaboy.vhr.model.EsMatchVO" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="tournament" property="tournament" jdbcType="VARCHAR" />
+    <result column="stage" property="stage" jdbcType="VARCHAR" />
+    <result column="bo" property="bo" jdbcType="INTEGER" />
+    <result column="status" property="status" jdbcType="VARCHAR" />
+    <result column="team1_id" property="team1Id" jdbcType="INTEGER" />
+    <result column="team2_id" property="team2Id" jdbcType="INTEGER" />
+    <result column="start_time" property="startTime" jdbcType="VARCHAR" />
+    <collection property="maps" ofType="org.javaboy.vhr.model.EsMatchMap" >
+      <id column="m_id" property="id" jdbcType="INTEGER" />
+      <result column="m_map_order" property="mapOrder" jdbcType="INTEGER" />
+      <result column="m_map_name" property="name" jdbcType="VARCHAR" />
+      <result column="m_score1" property="score1" jdbcType="INTEGER" />
+      <result column="m_score2" property="score2" jdbcType="INTEGER" />
+      <result column="m_live" property="live" jdbcType="BIT" />
+    </collection>
+  </resultMap>
+
+  <select id="selectTeams" resultMap="EsTeamMap">
+    select id, name, short_name, region, world_rank, color1, color2 from es_team order by world_rank
+  </select>
+
+  <select id="selectPlayers" resultMap="EsPlayerMap">
+    select id, team_id, nick, real_name, country, rating, kd, adr, kast, maps_cnt from es_player order by rating desc
+  </select>
+
+  <select id="selectTournaments" resultMap="EsTournamentMap">
+    select id, name from es_tournament order by id
+  </select>
+
+  <select id="selectMatches" resultMap="EsMatchVOResult">
+    select m.id, t.name as tournament, m.stage, m.bo, m.status, m.team1_id, m.team2_id,
+           date_format(m.start_time, '%Y-%m-%dT%H:%i:%s') as start_time,
+           mm.id as m_id, mm.map_order as m_map_order, mm.map_name as m_map_name,
+           mm.score1 as m_score1, mm.score2 as m_score2, mm.live as m_live
+    from es_match m
+    left join es_tournament t on m.tournament_id = t.id
+    left join es_match_map mm on m.id = mm.match_id
+    order by m.start_time
+  </select>
+
+  <select id="selectFinishedWithMaps" resultMap="EsMatchWithMaps">
+    select m.id, m.tournament_id, m.stage, m.bo, m.team1_id, m.team2_id, m.status, m.start_time,
+           mm.id as m_id, mm.map_order as m_map_order, mm.map_name as m_map_name,
+           mm.score1 as m_score1, mm.score2 as m_score2, mm.live as m_live
+    from es_match m
+    inner join es_match_map mm on m.id = mm.match_id
+    where m.status = 'finished'
+    order by m.start_time, mm.map_order
+  </select>
+
+  <insert id="addTeam" parameterType="org.javaboy.vhr.model.EsTeam" useGeneratedKeys="true" keyProperty="id">
+    insert into es_team (name, short_name, region, world_rank, color1, color2)
+    values (#{name}, #{shortName}, #{region}, #{worldRank}, #{color1}, #{color2})
+  </insert>
+
+  <update id="updateTeam" parameterType="org.javaboy.vhr.model.EsTeam">
+    update es_team
+    set name = #{name}, short_name = #{shortName}, region = #{region},
+        world_rank = #{worldRank}, color1 = #{color1}, color2 = #{color2}
+    where id = #{id}
+  </update>
+
+  <delete id="deleteTeam">
+    delete from es_team where id = #{id}
+  </delete>
+
+  <!-- 比赛（系列赛）维护：比赛本身与逐图比分分成两段写入，
+       修改时先清空该场比赛的逐图再重建，避免逐条比对新旧记录的复杂度 -->
+  <insert id="addMatch" parameterType="org.javaboy.vhr.model.EsMatch" useGeneratedKeys="true" keyProperty="id">
+    insert into es_match (tournament_id, stage, bo, team1_id, team2_id, status, start_time)
+    values (#{tournamentId}, #{stage}, #{bo}, #{team1Id}, #{team2Id}, #{status}, #{startTime})
+  </insert>
+
+  <update id="updateMatch" parameterType="org.javaboy.vhr.model.EsMatch">
+    update es_match
+    set tournament_id = #{tournamentId},
+        stage = #{stage},
+        bo = #{bo},
+        team1_id = #{team1Id},
+        team2_id = #{team2Id},
+        status = #{status},
+        start_time = #{startTime}
+    where id = #{id}
+  </update>
+
+  <delete id="deleteMatch">
+    delete from es_match where id = #{id}
+  </delete>
+
+  <delete id="deleteMapsByMatchId">
+    delete from es_match_map where match_id = #{matchId}
+  </delete>
+
+  <insert id="addMatchMap" parameterType="org.javaboy.vhr.model.EsMatchMap">
+    insert into es_match_map (match_id, map_order, map_name, score1, score2, live)
+    values (#{matchId}, #{mapOrder}, #{name}, #{score1}, #{score2}, #{live})
+  </insert>
+
+</mapper>

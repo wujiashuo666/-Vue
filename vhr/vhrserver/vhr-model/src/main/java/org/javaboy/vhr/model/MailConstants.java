@@ -1,11 +1,5 @@
 package org.javaboy.vhr.model;
 
-/**
- * 邮件模块相关常量
- *
- * @作者 江南一点雨
- * @公众号 江南一点雨
- */
 public class MailConstants {
     /**
      * 消息状态：投递中

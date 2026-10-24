@@ -15,13 +15,6 @@ import org.springframework.util.CollectionUtils;
 import java.util.Date;
 import java.util.List;
 
-/**
- * 邮件补偿任务：定时扫描投递中的消息，
- * 未超过最大重试次数的重新发送，超限的标记为投递失败。
- *
- * @作者 江南一点雨
- * @公众号 江南一点雨
- */
 @Component
 public class MailSendTask {
     @Autowired

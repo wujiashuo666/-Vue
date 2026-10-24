@@ -4,10 +4,10 @@
   <resultMap id="BaseResultMap" type="org.javaboy.vhr.model.Employeeec" >
     <id column="id" property="id" jdbcType="INTEGER" />
     <result column="eid" property="eid" jdbcType="INTEGER" />
-    <result column="ecDate" property="ecdate" jdbcType="DATE" />
-    <result column="ecReason" property="ecreason" jdbcType="VARCHAR" />
-    <result column="ecPoint" property="ecpoint" jdbcType="INTEGER" />
-    <result column="ecType" property="ectype" jdbcType="INTEGER" />
+    <result column="ecDate" property="ecDate" jdbcType="DATE" />
+    <result column="ecReason" property="ecReason" jdbcType="VARCHAR" />
+    <result column="ecPoint" property="ecPoint" jdbcType="INTEGER" />
+    <result column="ecType" property="ecType" jdbcType="INTEGER" />
     <result column="remark" property="remark" jdbcType="VARCHAR" />
   </resultMap>
   <sql id="Base_Column_List" >
@@ -27,8 +27,8 @@
     insert into employeeec (id, eid, ecDate, 
       ecReason, ecPoint, ecType, 
       remark)
-    values (#{id,jdbcType=INTEGER}, #{eid,jdbcType=INTEGER}, #{ecdate,jdbcType=DATE}, 
-      #{ecreason,jdbcType=VARCHAR}, #{ecpoint,jdbcType=INTEGER}, #{ectype,jdbcType=INTEGER}, 
+    values (#{id,jdbcType=INTEGER}, #{eid,jdbcType=INTEGER}, #{ecDate,jdbcType=DATE}, 
+      #{ecReason,jdbcType=VARCHAR}, #{ecPoint,jdbcType=INTEGER}, #{ecType,jdbcType=INTEGER}, 
       #{remark,jdbcType=VARCHAR})
   </insert>
   <insert id="insertSelective" parameterType="org.javaboy.vhr.model.Employeeec" >
@@ -40,16 +40,16 @@
       <if test="eid != null" >
         eid,
       </if>
-      <if test="ecdate != null" >
+      <if test="ecDate != null" >
         ecDate,
       </if>
-      <if test="ecreason != null" >
+      <if test="ecReason != null" >
         ecReason,
       </if>
-      <if test="ecpoint != null" >
+      <if test="ecPoint != null" >
         ecPoint,
       </if>
-      <if test="ectype != null" >
+      <if test="ecType != null" >
         ecType,
       </if>
       <if test="remark != null" >
@@ -63,17 +63,17 @@
       <if test="eid != null" >
         #{eid,jdbcType=INTEGER},
       </if>
-      <if test="ecdate != null" >
-        #{ecdate,jdbcType=DATE},
+      <if test="ecDate != null" >
+        #{ecDate,jdbcType=DATE},
       </if>
-      <if test="ecreason != null" >
-        #{ecreason,jdbcType=VARCHAR},
+      <if test="ecReason != null" >
+        #{ecReason,jdbcType=VARCHAR},
       </if>
-      <if test="ecpoint != null" >
-        #{ecpoint,jdbcType=INTEGER},
+      <if test="ecPoint != null" >
+        #{ecPoint,jdbcType=INTEGER},
       </if>
-      <if test="ectype != null" >
-        #{ectype,jdbcType=INTEGER},
+      <if test="ecType != null" >
+        #{ecType,jdbcType=INTEGER},
       </if>
       <if test="remark != null" >
         #{remark,jdbcType=VARCHAR},
@@ -86,17 +86,17 @@
       <if test="eid != null" >
         eid = #{eid,jdbcType=INTEGER},
       </if>
-      <if test="ecdate != null" >
-        ecDate = #{ecdate,jdbcType=DATE},
+      <if test="ecDate != null" >
+        ecDate = #{ecDate,jdbcType=DATE},
       </if>
-      <if test="ecreason != null" >
-        ecReason = #{ecreason,jdbcType=VARCHAR},
+      <if test="ecReason != null" >
+        ecReason = #{ecReason,jdbcType=VARCHAR},
       </if>
-      <if test="ecpoint != null" >
-        ecPoint = #{ecpoint,jdbcType=INTEGER},
+      <if test="ecPoint != null" >
+        ecPoint = #{ecPoint,jdbcType=INTEGER},
       </if>
-      <if test="ectype != null" >
-        ecType = #{ectype,jdbcType=INTEGER},
+      <if test="ecType != null" >
+        ecType = #{ecType,jdbcType=INTEGER},
       </if>
       <if test="remark != null" >
         remark = #{remark,jdbcType=VARCHAR},
@@ -107,11 +107,30 @@
   <update id="updateByPrimaryKey" parameterType="org.javaboy.vhr.model.Employeeec" >
     update employeeec
     set eid = #{eid,jdbcType=INTEGER},
-      ecDate = #{ecdate,jdbcType=DATE},
-      ecReason = #{ecreason,jdbcType=VARCHAR},
-      ecPoint = #{ecpoint,jdbcType=INTEGER},
-      ecType = #{ectype,jdbcType=INTEGER},
+      ecDate = #{ecDate,jdbcType=DATE},
+      ecReason = #{ecReason,jdbcType=VARCHAR},
+      ecPoint = #{ecPoint,jdbcType=INTEGER},
+      ecType = #{ecType,jdbcType=INTEGER},
       remark = #{remark,jdbcType=VARCHAR}
     where id = #{id,jdbcType=INTEGER}
   </update>
+
+  <select id="getEcByPage" resultType="java.util.HashMap">
+    SELECT c.id, c.eid, e.name AS empName, DATE_FORMAT(c.ecDate, '%Y-%m-%d') AS ecDate,
+           c.ecReason, c.ecPoint, c.ecType, c.remark
+    FROM employeeec c LEFT JOIN employee e ON c.eid = e.id
+    <if test="name != null and name != ''">
+      WHERE e.name LIKE CONCAT('%', #{name}, '%')
+    </if>
+    ORDER BY c.ecDate DESC
+    LIMIT #{page}, #{size}
+  </select>
+
+  <select id="getEcTotal" resultType="java.lang.Long">
+    SELECT COUNT(*)
+    FROM employeeec c LEFT JOIN employee e ON c.eid = e.id
+    <if test="name != null and name != ''">
+      WHERE e.name LIKE CONCAT('%', #{name}, '%')
+    </if>
+  </select>
 </mapper>
