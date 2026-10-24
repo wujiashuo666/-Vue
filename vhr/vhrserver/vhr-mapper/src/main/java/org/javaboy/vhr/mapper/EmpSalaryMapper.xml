@@ -66,4 +66,26 @@
       sid = #{sid,jdbcType=INTEGER}
     where id = #{id,jdbcType=INTEGER}
   </update>
+
+  <select id="getSalaryTable" resultType="java.util.HashMap">
+    SELECT e.id AS eid, e.name AS empName, d.name AS depName,
+           s.id AS sid, s.name AS sobName,
+           s.basicSalary, s.bonus, s.lunchSalary, s.trafficSalary,
+           (s.basicSalary + s.bonus + s.lunchSalary + s.trafficSalary) AS shouldPay,
+           ROUND(s.pensionBase * s.pensionPer, 2) AS pension,
+           ROUND(s.medicalBase * s.medicalPer, 2) AS medical,
+           ROUND(s.accumulationFundBase * s.accumulationFundPer, 2) AS fund,
+           ROUND(s.basicSalary + s.bonus + s.lunchSalary + s.trafficSalary
+                 - s.pensionBase * s.pensionPer
+                 - s.medicalBase * s.medicalPer
+                 - s.accumulationFundBase * s.accumulationFundPer, 2) AS actualPay
+    FROM empsalary es
+    LEFT JOIN employee e ON es.eid = e.id
+    LEFT JOIN department d ON e.departmentId = d.id
+    LEFT JOIN salary s ON es.sid = s.id
+    <if test="name != null and name != ''">
+      WHERE e.name LIKE CONCAT('%', #{name}, '%')
+    </if>
+    ORDER BY e.name
+  </select>
 </mapper>

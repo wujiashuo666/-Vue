@@ -2,18 +2,23 @@ package org.javaboy.vhr.model;
 
 import java.util.Date;
 
+/**
+ * 员工奖惩记录，对应 employeeec 表。
+ * 属性名与表字段/前端 JSON 保持一致（ecDate、ecReason、ecPoint、ecType），
+ * 避免 Jackson 反序列化时字段名不匹配导致只有 remark 能写入的问题。
+ */
 public class Employeeec {
     private Integer id;
 
     private Integer eid;
 
-    private Date ecdate;
+    private Date ecDate;
 
-    private String ecreason;
+    private String ecReason;
 
-    private Integer ecpoint;
+    private Integer ecPoint;
 
-    private Integer ectype;
+    private Integer ecType;
 
     private String remark;
 
@@ -33,36 +38,36 @@ public class Employeeec {
         this.eid = eid;
     }
 
-    public Date getEcdate() {
-        return ecdate;
+    public Date getEcDate() {
+        return ecDate;
     }
 
-    public void setEcdate(Date ecdate) {
-        this.ecdate = ecdate;
+    public void setEcDate(Date ecDate) {
+        this.ecDate = ecDate;
     }
 
-    public String getEcreason() {
-        return ecreason;
+    public String getEcReason() {
+        return ecReason;
     }
 
-    public void setEcreason(String ecreason) {
-        this.ecreason = ecreason == null ? null : ecreason.trim();
+    public void setEcReason(String ecReason) {
+        this.ecReason = ecReason == null ? null : ecReason.trim();
     }
 
-    public Integer getEcpoint() {
-        return ecpoint;
+    public Integer getEcPoint() {
+        return ecPoint;
     }
 
-    public void setEcpoint(Integer ecpoint) {
-        this.ecpoint = ecpoint;
+    public void setEcPoint(Integer ecPoint) {
+        this.ecPoint = ecPoint;
     }
 
-    public Integer getEctype() {
-        return ectype;
+    public Integer getEcType() {
+        return ecType;
     }
 
-    public void setEctype(Integer ectype) {
-        this.ectype = ectype;
+    public void setEcType(Integer ecType) {
+        this.ecType = ecType;
     }
 
     public String getRemark() {
@@ -77,12 +82,12 @@ public class Employeeec {
     public String toString() {
         return "Employeeec{" +
                 "id=" + id +
-                "eid=" + eid +
-                "ecdate=" + ecdate +
-                "ecreason='" + ecreason + '\'' +
-                "ecpoint=" + ecpoint +
-                "ectype=" + ectype +
-                "remark='" + remark + '\'' +
+                ", eid=" + eid +
+                ", ecDate=" + ecDate +
+                ", ecReason='" + ecReason + '\'' +
+                ", ecPoint=" + ecPoint +
+                ", ecType=" + ecType +
+                ", remark='" + remark + '\'' +
                 '}';
     }
 }

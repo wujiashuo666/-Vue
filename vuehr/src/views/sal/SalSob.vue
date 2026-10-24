@@ -36,7 +36,8 @@
         <el-dialog
                 :title="dialogTitle"
                 v-model="dialogVisible"
-                width="50%">
+                width="50%"
+                append-to-body>
             <div style="display: flex;justify-content: space-around;align-items: center">
                 <el-steps direction="vertical" :active="activeItemIndex">
                     <el-step :title="itemName" v-for="(itemName,index) in salaryItemName" :key="index"></el-step>

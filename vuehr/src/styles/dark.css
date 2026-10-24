@@ -1,0 +1,303 @@
+/**
+ * 暗色电竞主题全局样式
+ * Element Plus 基础暗色由 theme-chalk/dark/css-vars.css 提供，
+ * 这里只做布局容器、滚动条与个别组件的电竞风格微调。
+ */
+
+:root {
+    --es-bg: #0b0e14;
+    --es-surface: #141a22;
+    --es-surface-2: #10151c;
+    --es-border: #232b36;
+    --es-text: #e6edf3;
+    --es-muted: #8b949e;
+    --es-accent: #ff4655;
+    --es-accent-2: #ff8a00;
+    --es-warn: #ffb020;
+}
+
+html.dark {
+    background-color: var(--es-bg);
+    color-scheme: dark;
+}
+
+body {
+    margin: 0;
+    background-color: var(--es-bg);
+    color: var(--es-text);
+    font-family: 'Helvetica Neue', Helvetica, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', Arial, sans-serif;
+}
+
+/* 滚动条 */
+::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+}
+::-webkit-scrollbar-track {
+    background: var(--es-surface-2);
+}
+::-webkit-scrollbar-thumb {
+    background: #2f3845;
+    border-radius: 5px;
+    border: 2px solid var(--es-surface-2);
+}
+::-webkit-scrollbar-thumb:hover {
+    background: #3f4a59;
+}
+
+/* 侧边栏菜单：透明底叠在暗色容器上，选中项用红橙渐变条标识 */
+.el-menu {
+    background: transparent !important;
+    border-right: none !important;
+}
+.el-menu-item,
+.el-sub-menu__title {
+    background: transparent !important;
+    color: #c9d1d9 !important;
+    font-size: 14px !important;
+    font-weight: 500 !important;
+    border-radius: 8px;
+    margin: 2px 6px;
+}
+.el-menu-item:hover,
+.el-sub-menu__title:hover {
+    background: rgba(255, 70, 85, 0.12) !important;
+    color: #fff !important;
+}
+.el-menu-item.is-active {
+    background: linear-gradient(135deg, rgba(255, 70, 85, 0.9), rgba(255, 138, 0, 0.85)) !important;
+    color: #fff !important;
+    font-weight: 600 !important;
+}
+
+/* 表格：压暗表头与斑马纹，贴合整体色板 */
+.el-table {
+    --el-table-bg-color: var(--es-surface);
+    --el-table-tr-bg-color: var(--es-surface);
+    --el-table-header-bg-color: var(--es-surface-2);
+    --el-table-border-color: var(--es-border);
+    --el-table-text-color: var(--es-text);
+    --el-table-header-text-color: var(--es-muted);
+    --el-table-row-hover-bg-color: #1a212b;
+    background: transparent;
+    border-radius: 10px;
+    overflow: hidden;
+}
+.el-table th.el-table__cell {
+    font-weight: 600;
+}
+
+/* 弹窗 */
+.el-dialog {
+    background: var(--es-surface) !important;
+    border: 1px solid var(--es-border);
+    border-radius: 14px !important;
+}
+.el-dialog__title {
+    color: var(--es-text) !important;
+    font-weight: 700;
+}
+.el-dialog__headerbtn .el-dialog__close {
+    color: var(--es-muted);
+}
+
+/* 表单与分页 */
+.el-form-item__label {
+    color: var(--es-muted) !important;
+}
+.el-pagination {
+    --el-pagination-bg-color: transparent;
+    --el-pagination-text-color: var(--es-muted);
+    --el-pagination-button-bg-color: var(--es-surface);
+}
+
+/* 面包屑 */
+.el-breadcrumb__inner,
+.el-breadcrumb__item {
+    color: var(--es-muted) !important;
+}
+.el-breadcrumb__item:last-child .el-breadcrumb__inner {
+    color: var(--es-text) !important;
+    font-weight: 600;
+}
+
+/* 空状态 */
+.el-empty__description p {
+    color: var(--es-muted);
+}
+
+/* ============================================================
+ * 按钮重写：统一为暗色电竞主题（红/橙强调色）
+ * 之前"添加"按钮多为绿色 success / 蓝色 primary，与暗色背景不搭；
+ * 这里把主按钮改为电竞红渐变、"添加"类按钮改为黑红描边。
+ * ============================================================ */
+
+/* 全局主色改为电竞红，联动复选框/开关/分页/标签等组件 */
+html.dark {
+    --el-color-primary: #ff4655;
+    --el-color-primary-light-3: #ff6b78;
+    --el-color-primary-light-5: #ff8a93;
+    --el-color-primary-light-7: #ffb0b6;
+    --el-color-primary-light-8: #ffc6ca;
+    --el-color-primary-light-9: #2a1418;
+    --el-color-primary-dark-2: #cc3843;
+    /* 统一圆角与字重，提升精致感 */
+    --el-border-radius-base: 8px;
+}
+
+/* 所有按钮统一手感：圆角、字重、过渡 */
+html.dark .el-button {
+    border-radius: 8px;
+    font-weight: 600;
+    letter-spacing: 0.3px;
+    transition: background-color .18s ease, border-color .18s ease,
+                color .18s ease, box-shadow .18s ease, transform .08s ease;
+}
+html.dark .el-button:active {
+    transform: translateY(1px);
+}
+
+/* 主按钮：电竞红渐变 + 微光（搜索 / 保存 / 确定 / 提交 / +添加 等） */
+html.dark .el-button--primary {
+    background: linear-gradient(135deg, #ff4655 0%, #e23b48 100%);
+    border: none;
+    color: #fff;
+    box-shadow: 0 2px 10px rgba(255, 70, 85, 0.28);
+}
+html.dark .el-button--primary:hover {
+    background: linear-gradient(135deg, #ff5c6a 0%, #ff4655 100%);
+    box-shadow: 0 4px 16px rgba(255, 70, 85, 0.42);
+}
+html.dark .el-button--primary:focus {
+    background: linear-gradient(135deg, #ff5c6a 0%, #ff4655 100%);
+}
+html.dark .el-button--primary:active {
+    background: linear-gradient(135deg, #e23b48 0%, #cc3843 100%);
+}
+/* 主按钮的朴素(plain)变体：透明底 + 红描边 */
+html.dark .el-button--primary.is-plain {
+    background: transparent;
+    border: 1px solid #ff4655;
+    color: #ff4655;
+    box-shadow: none;
+}
+html.dark .el-button--primary.is-plain:hover {
+    background: rgba(255, 70, 85, 0.12);
+    color: #fff;
+    border-color: #ff4655;
+}
+
+/* "添加"类按钮（success 型）：黑红描边风格，hover 时填充红 */
+html.dark .el-button--success {
+    background-color: #141a22;
+    border: 1px solid #ff4655;
+    color: #ff4655;
+    box-shadow: none;
+}
+html.dark .el-button--success:hover,
+html.dark .el-button--success:focus {
+    background-color: #ff4655;
+    border-color: #ff4655;
+    color: #fff;
+    box-shadow: 0 4px 14px rgba(255, 70, 85, 0.35);
+}
+html.dark .el-button--success:active {
+    background-color: #cc3843;
+    border-color: #cc3843;
+}
+html.dark .el-button--success.is-plain {
+    background: transparent;
+    border: 1px solid rgba(255, 70, 85, 0.55);
+    color: #ff7a86;
+}
+html.dark .el-button--success.is-plain:hover {
+    background: rgba(255, 70, 85, 0.1);
+    color: #ff4655;
+    border-color: #ff4655;
+}
+
+/* 默认按钮（取消 等）：贴合暗色面板的灰黑底 */
+html.dark .el-button--default {
+    background-color: #1a212b;
+    border-color: #2b3441;
+    color: #c9d1d9;
+}
+html.dark .el-button--default:hover {
+    background-color: #232c38;
+    border-color: #3a4554;
+    color: #fff;
+}
+html.dark .el-button--default:focus {
+    background-color: #232c38;
+    border-color: #3a4554;
+    color: #fff;
+}
+html.dark .el-button--default.is-plain {
+    background: transparent;
+    border-color: #2b3441;
+    color: #8b949e;
+}
+html.dark .el-button--default.is-plain:hover {
+    background: rgba(255, 255, 255, 0.04);
+    color: #fff;
+    border-color: #3a4554;
+}
+
+/* 危险按钮（删除）：深绯红，区别于主红，保留"破坏性"语义 */
+html.dark .el-button--danger {
+    background: linear-gradient(135deg, #c0392b 0%, #a93226 100%);
+    border: none;
+    color: #fff;
+}
+html.dark .el-button--danger:hover {
+    background: linear-gradient(135deg, #d4453a 0%, #c0392b 100%);
+}
+html.dark .el-button--danger:active {
+    background: linear-gradient(135deg, #a93226 0%, #922b21 100%);
+}
+html.dark .el-button--danger.is-plain {
+    background: transparent;
+    border: 1px solid #c0392b;
+    color: #e07a6f;
+}
+html.dark .el-button--danger.is-plain:hover {
+    background: rgba(192, 57, 43, 0.12);
+    color: #ff8a7a;
+    border-color: #c0392b;
+}
+
+/* 警告按钮：橙，呼应强调色 es-accent-2 */
+html.dark .el-button--warning {
+    background: linear-gradient(135deg, #ffb020 0%, #ff8a00 100%);
+    border: none;
+    color: #1a1206;
+    font-weight: 700;
+}
+html.dark .el-button--warning:hover {
+    background: linear-gradient(135deg, #ffc24d 0%, #ff8a00 100%);
+}
+html.dark .el-button--warning.is-plain {
+    background: transparent;
+    border: 1px solid #ff8a00;
+    color: #ffb020;
+}
+
+/* 文字按钮（link）：hover 时用电竞红，去掉默认蓝 */
+html.dark .el-button.is-link {
+    color: #8b949e;
+}
+html.dark .el-button.is-link:hover {
+    color: #ff4655;
+}
+html.dark .el-button.is-link.el-button--primary {
+    color: #ff6b78;
+}
+html.dark .el-button.is-link.el-button--primary:hover {
+    color: #ff4655;
+}
+html.dark .el-button.is-link.el-button--danger {
+    color: #e07a6f;
+}
+html.dark .el-button.is-link.el-button--danger:hover {
+    color: #ff8a7a;
+}

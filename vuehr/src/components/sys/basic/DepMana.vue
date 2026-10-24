@@ -35,7 +35,8 @@
         <el-dialog
                 title="添加部门"
                 v-model="dialogVisible"
-                width="30%">
+                width="30%"
+                append-to-body>
             <div>
                 <table>
                     <tr>

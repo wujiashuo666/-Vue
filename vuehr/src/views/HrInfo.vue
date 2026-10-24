@@ -40,7 +40,8 @@
         <el-dialog
                 title="修改用户信息"
                 v-model="dialogVisible"
-                width="30%">
+                width="30%"
+                append-to-body>
             <div>
                 <table>
                     <tr>
@@ -75,6 +76,16 @@
                             <el-input v-model="hr2.address"></el-input>
                         </td>
                     </tr>
+                    <tr>
+                        <td>
+                            <el-tag>用户标签：</el-tag>
+                        </td>
+                        <td>
+                            <el-select v-model="selectedRoles" multiple placeholder="选择角色" style="width: 100%">
+                                <el-option v-for="r in allRoles" :key="r.id" :label="r.nameZh" :value="r.id"></el-option>
+                            </el-select>
+                        </td>
+                    </tr>
                 </table>
             </div>
             <template #footer>
@@ -87,7 +98,8 @@
         <el-dialog
                 title="修改密码"
                 v-model="passwdDialogVisible"
-                width="30%">
+                width="30%"
+                append-to-body>
             <div>
                 <el-form :model="ruleForm" status-icon :rules="rules" ref="ruleForm" label-width="100px"
                          class="demo-ruleForm">
@@ -153,7 +165,9 @@
                 hr: null,
                 hr2: null,
                 dialogVisible: false,
-                passwdDialogVisible: false
+                passwdDialogVisible: false,
+                allRoles: [],
+                selectedRoles: []
             }
         },
         mounted() {
@@ -166,13 +180,23 @@
             updateHrInfo() {
                 this.putRequest("/hr/info", this.hr2).then(resp => {
                     if (resp) {
-                        this.dialogVisible = false;
-                        this.initHr();
+                        let url = '/system/hr/role?hrid=' + this.hr.id;
+                        this.selectedRoles.forEach(rid => { url += '&rids=' + rid; });
+                        this.putRequest(url).then(() => {
+                            this.dialogVisible = false;
+                            this.initHr();
+                        });
                     }
                 })
             },
             showUpdateHrInfoView() {
                 this.dialogVisible = true;
+                this.getRequest('/system/hr/roles').then(resp => {
+                    if (resp) {
+                        this.allRoles = resp;
+                        this.selectedRoles = this.hr.roles ? this.hr.roles.map(r => r.id) : [];
+                    }
+                });
             },
             submitForm(formName) {
                 this.$refs[formName].validate((valid) => {

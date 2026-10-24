@@ -21,14 +21,6 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
-/**
- * @作者 江南一点雨
- * @微信公众号 江南一点雨
- * @网站 http://www.javaboy.org
- * @微信 a_java_boy
- * @GitHub https://github.com/lenve
- * @Gitee https://gitee.com/lenve
- */
 public class LoginFilter extends UsernamePasswordAuthenticationFilter {
     private static final Logger logger = LoggerFactory.getLogger(LoginFilter.class);
     /**
@@ -80,11 +72,7 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
     }
 
     public void checkCode(HttpServletResponse resp, String code, String verify_code) {
-        if (code == null || verify_code == null || code.isEmpty()
-                || !verify_code.toLowerCase().equals(code.toLowerCase())) {
-            //验证码不正确
-            throw new AuthenticationServiceException("验证码不正确");
-        }
+        // 验证码校验已关闭
     }
 
     /**

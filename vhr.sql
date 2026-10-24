@@ -499,3 +499,85 @@ DELIMITER ;
 /*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;
 /*!40014 SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
+
+
+/* ============================================================
+   赛事中心表（战队 / 选手 / 赛事 / 比赛 / 逐图比分）
+   建表结构；种子数据由 Flyway 迁移 V3__esports.sql 在应用启动时注入。
+   ============================================================ */
+
+DROP TABLE IF EXISTS `es_match_map`;
+DROP TABLE IF EXISTS `es_match`;
+DROP TABLE IF EXISTS `es_tournament`;
+DROP TABLE IF EXISTS `es_player`;
+DROP TABLE IF EXISTS `es_team`;
+
+CREATE TABLE IF NOT EXISTS `es_team` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `name` varchar(64) NOT NULL,
+  `short_name` varchar(16) NOT NULL,
+  `region` varchar(32) DEFAULT NULL,
+  `world_rank` int DEFAULT NULL,
+  `color1` varchar(16) DEFAULT NULL,
+  `color2` varchar(16) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE IF NOT EXISTS `es_player` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `team_id` int DEFAULT NULL,
+  `nick` varchar(64) NOT NULL,
+  `real_name` varchar(128) DEFAULT NULL,
+  `country` varchar(8) DEFAULT NULL,
+  `rating` decimal(5,2) DEFAULT NULL,
+  `kd` decimal(5,2) DEFAULT NULL,
+  `adr` decimal(6,2) DEFAULT NULL,
+  `kast` decimal(5,2) DEFAULT NULL,
+  `maps_cnt` int DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `team_id` (`team_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE IF NOT EXISTS `es_tournament` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `name` varchar(128) NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE IF NOT EXISTS `es_match` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `tournament_id` int DEFAULT NULL,
+  `stage` varchar(32) DEFAULT NULL,
+  `bo` int DEFAULT NULL,
+  `team1_id` int DEFAULT NULL,
+  `team2_id` int DEFAULT NULL,
+  `status` varchar(16) NOT NULL DEFAULT 'upcoming',
+  `start_time` datetime DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `tournament_id` (`tournament_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE IF NOT EXISTS `es_match_map` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `match_id` int DEFAULT NULL,
+  `map_order` int DEFAULT NULL,
+  `map_name` varchar(32) DEFAULT NULL,
+  `score1` int DEFAULT 0,
+  `score2` int DEFAULT 0,
+  `live` tinyint(1) DEFAULT 0,
+  PRIMARY KEY (`id`),
+  KEY `match_id` (`match_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- ===== 2026-10-30 电竞化改造同步 =====
+-- 职位改为 CS 战队角色
+UPDATE `position` SET name='指挥' WHERE id=29;
+UPDATE `position` SET name='狙击手' WHERE id=31;
+UPDATE `position` SET name='突破手' WHERE id=33;
+UPDATE `position` SET name='自由人' WHERE id=34;
+UPDATE `position` SET name='步枪手' WHERE id=36;
+UPDATE `position` SET name='教练' WHERE id=30;
+-- 系统管理 → 战队管理
+INSERT INTO `menu` (`url`,`path`,`component`,`name`,`iconCls`,`keepAlive`,`requireAuth`,`parentId`,`enabled`)
+SELECT '/esports/team/**','/sys/team','SysTeam','战队管理','fa fa-shield',keepAlive,requireAuth,id,1 FROM `menu` WHERE `name`='系统管理' AND `parentId`=1;
+INSERT INTO `menu_role` (`mid`,`rid`) SELECT (SELECT id FROM `menu` WHERE `path`='/sys/team'), rid FROM `menu_role` WHERE mid=23;

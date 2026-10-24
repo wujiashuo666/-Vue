@@ -19,12 +19,11 @@
     </modules>
 
     <properties>
-        <java.version>21</java.version>
-        <maven.compiler.source>21</maven.compiler.source>
-        <maven.compiler.target>21</maven.compiler.target>
+        <java.version>25</java.version>
+        <maven.compiler.source>25</maven.compiler.source>
+        <maven.compiler.target>25</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <mybatis-spring-boot.version>4.1.0</mybatis-spring-boot.version>
-        <druid.version>1.2.28</druid.version>
         <poi.version>6.0.0</poi.version>
         <fastdfs-client.version>1.27.0.0</fastdfs-client.version>
     </properties>

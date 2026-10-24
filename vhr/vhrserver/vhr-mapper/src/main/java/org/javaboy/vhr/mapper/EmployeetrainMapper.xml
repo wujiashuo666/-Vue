@@ -90,4 +90,22 @@
       remark = #{remark,jdbcType=VARCHAR}
     where id = #{id,jdbcType=INTEGER}
   </update>
+
+  <select id="getTrainByPage" resultType="java.util.HashMap">
+    SELECT t.id, t.eid, e.name AS empName, t.trainDate, t.trainContent, t.remark
+    FROM employeetrain t LEFT JOIN employee e ON t.eid = e.id
+    <if test="name != null and name != ''">
+      WHERE e.name LIKE CONCAT('%', #{name}, '%')
+    </if>
+    ORDER BY t.trainDate DESC
+    LIMIT #{page}, #{size}
+  </select>
+
+  <select id="getTrainTotal" resultType="java.lang.Long">
+    SELECT COUNT(*)
+    FROM employeetrain t LEFT JOIN employee e ON t.eid = e.id
+    <if test="name != null and name != ''">
+      WHERE e.name LIKE CONCAT('%', #{name}, '%')
+    </if>
+  </select>
 </mapper>

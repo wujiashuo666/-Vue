@@ -68,7 +68,8 @@
         <el-dialog
                 title="修改职位"
                 v-model="dialogVisible"
-                width="30%">
+                width="30%"
+                append-to-body>
             <div>
                 <div>
                     <el-tag>职位名称</el-tag>

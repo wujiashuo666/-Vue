@@ -5,9 +5,6 @@ import java.util.List;
 
 public class Role implements Serializable {
 
-    /**
-     * 序列化版本号（阿里巴巴Java开发规范【强制】要求显式声明）
-     */
     private static final long serialVersionUID = 1L;
 
     private Integer id;

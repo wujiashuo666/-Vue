@@ -7,11 +7,16 @@ import zhCn from 'element-plus/es/locale/lang/zh-cn'
 import * as ElementPlusIconsVue from '@element-plus/icons-vue'
 import {ElMessage, ElMessageBox, ElNotification} from 'element-plus'
 import 'element-plus/dist/index.css'
+import 'element-plus/theme-chalk/dark/css-vars.css'
+import './styles/dark.css'
 import 'font-awesome/css/font-awesome.min.css'
 import {deleteRequest, getRequest, postKeyValueRequest, postRequest, putRequest} from "./utils/api";
 import {initMenu} from "./utils/menus";
 
 const app = createApp(App)
+
+//启用 Element Plus 暗色主题（需在挂载前给 html 加 dark 类）
+document.documentElement.classList.add('dark')
 
 //注册 Element Plus 图标
 for (const [key, component] of Object.entries(ElementPlusIconsVue)) {

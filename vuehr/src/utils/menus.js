@@ -1,4 +1,5 @@
 import {getRequest} from "./api";
+import {matchMenu, matchRoutes} from "./matchRoutes";
 
 //Vite 用 import.meta.glob 实现按需加载
 const modules = import.meta.glob('../views/**/*.vue')
@@ -16,6 +17,9 @@ const resolveView = (component) => {
         return `../views/sta/${component}.vue`;
     } else if (component.startsWith("Sys")) {
         return `../views/sys/${component}.vue`;
+    } else if (component.startsWith("Match")) {
+        //赛事模块页面在 views/match 子目录下，缺这个分支会解析到 views/MatchList.vue 导致白屏
+        return `../views/match/${component}.vue`;
     }
     return `../views/${component}.vue`;
 }
@@ -28,12 +32,16 @@ export const initMenu = (router, store) => {
     return getRequest("/system/config/menu").then(data => {
         if (data) {
             let fmtRoutes = formatRoutes(data);
-            //Vue Router 4 移除了 addRoutes，改为逐个 addRoute
+            //赛事中心必须作为 Home 的子路由注册：直接 addRoute 成顶层路由的话
+            //页面会脱离侧边栏/顶栏框架全屏渲染，进去之后无法返回其他页面
             fmtRoutes.forEach(route => {
+                if (route.path === '/') {
+                    route.children = [...(route.children || []), ...matchRoutes];
+                }
                 router.addRoute(route);
             })
             //侧边栏展示用原始菜单数据（路由表中的 name 因唯一性要求可能被重命名）
-            store.commit('initRoutes', data);
+            store.commit('initRoutes', [...data, matchMenu]);
             store.dispatch('connect');
         }
     })

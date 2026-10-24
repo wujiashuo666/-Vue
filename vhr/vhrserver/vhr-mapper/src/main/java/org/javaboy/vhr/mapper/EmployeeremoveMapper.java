@@ -1,6 +1,10 @@
 package org.javaboy.vhr.mapper;
 
+import org.apache.ibatis.annotations.Param;
 import org.javaboy.vhr.model.Employeeremove;
+
+import java.util.List;
+import java.util.Map;
 
 public interface EmployeeremoveMapper {
     int deleteByPrimaryKey(Integer id);
@@ -14,4 +18,10 @@ public interface EmployeeremoveMapper {
     int updateByPrimaryKeySelective(Employeeremove record);
 
     int updateByPrimaryKey(Employeeremove record);
+
+    List<Map<String,Object>> getMvByPage(@Param("page") Integer page,
+                                          @Param("size") Integer size,
+                                          @Param("name") String name);
+
+    Long getMvTotal(@Param("name") String name);
 }

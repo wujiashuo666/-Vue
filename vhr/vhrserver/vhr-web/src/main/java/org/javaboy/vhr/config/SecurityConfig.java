@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.*;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
@@ -27,14 +28,6 @@ import tools.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.PrintWriter;
 
-/**
- * @作者 江南一点雨
- * @公众号 江南一点雨
- * @微信号 a_java_boy
- * @GitHub https://github.com/lenve
- * @博客 http://wangsong.blog.csdn.net
- * @网站 http://www.javaboy.org
- */
 @Configuration
 public class SecurityConfig {
     @Autowired
@@ -118,6 +111,9 @@ public class SecurityConfig {
         http.authorizeHttpRequests(auth -> auth
                         //静态资源、验证码、登录接口直接放行
                         .requestMatchers("/css/**", "/js/**", "/index.html", "/img/**", "/fonts/**", "/favicon.ico", "/verifyCode")
+                        .permitAll()
+                        //赛事中心：只读接口公开浏览，维护类接口需要登录
+                        .requestMatchers(HttpMethod.GET, "/esports/**")
                         .permitAll()
                         //其余请求统一走动态权限校验
                         .anyRequest().access(customAuthorizationManager))
