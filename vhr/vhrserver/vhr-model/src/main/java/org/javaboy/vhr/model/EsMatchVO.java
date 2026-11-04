@@ -8,6 +8,7 @@ import java.util.List;
  */
 public class EsMatchVO {
     private Integer id;
+    private Integer tournamentId;
     private String tournament;
     private String stage;
     private Integer bo;
@@ -19,6 +20,8 @@ public class EsMatchVO {
 
     public Integer getId() { return id; }
     public void setId(Integer id) { this.id = id; }
+    public Integer getTournamentId() { return tournamentId; }
+    public void setTournamentId(Integer tournamentId) { this.tournamentId = tournamentId; }
     public String getTournament() { return tournament; }
     public void setTournament(String tournament) { this.tournament = tournament; }
     public String getStage() { return stage; }

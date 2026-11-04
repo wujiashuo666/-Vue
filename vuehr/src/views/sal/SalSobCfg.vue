@@ -3,72 +3,52 @@
         <div>
             <el-table :data="emps" border stripe size="small">
                 <el-table-column type="selection" align="left" width="55"></el-table-column>
-                <el-table-column prop="name" label="姓名" fixed width="120" align="left"></el-table-column>
-                <el-table-column prop="workID" label="工号" width="120" align="left"></el-table-column>
+                <el-table-column prop="name" label="选手" fixed width="120" align="left"></el-table-column>
+                <el-table-column prop="workID" label="编号" width="120" align="left"></el-table-column>
                 <el-table-column prop="email" label="电子邮件" width="200" align="left"></el-table-column>
                 <el-table-column prop="phone" label="电话号码" width="120" align="left"></el-table-column>
-                <el-table-column prop="department.name" label="所属部门" width="120" align="left"></el-table-column>
-                <el-table-column label="所属部门" align="center">
+                <el-table-column prop="department.name" label="所属战队" width="140" align="left"></el-table-column>
+                <el-table-column label="薪资方案" align="center">
                     <template #default="scope">
                         <el-tooltip placement="right" v-if="scope.row.salary">
                             <template #content><div>
                                 <table>
                                     <tr>
-                                        <td>基本工资</td>
+                                        <td>方案名称</td>
+                                        <td>{{scope.row.salary.name}}</td>
+                                    </tr>
+                                    <tr>
+                                        <td>基础月薪</td>
                                         <td>{{scope.row.salary.basicSalary}}</td>
                                     </tr>
                                     <tr>
-                                        <td>交通补助</td>
+                                        <td>出场费</td>
                                         <td>{{scope.row.salary.trafficSalary}}</td>
                                     </tr>
                                     <tr>
-                                        <td>午餐补助</td>
+                                        <td>直播补贴</td>
                                         <td>{{scope.row.salary.lunchSalary}}</td>
                                     </tr>
                                     <tr>
-                                        <td>奖金</td>
+                                        <td>夺冠奖金</td>
                                         <td>{{scope.row.salary.bonus}}</td>
                                     </tr>
                                     <tr>
-                                        <td>养老金比率</td>
-                                        <td>{{scope.row.salary.pensionPer}}</td>
-                                    </tr>
-                                    <tr>
-                                        <td>养老金基数</td>
-                                        <td>{{scope.row.salary.pensionBase}}</td>
-                                    </tr>
-                                    <tr>
-                                        <td>医疗保险比率</td>
-                                        <td>{{scope.row.salary.medicalPer}}</td>
-                                    </tr>
-                                    <tr>
-                                        <td>医疗保险基数</td>
-                                        <td>{{scope.row.salary.medicalBase}}</td>
-                                    </tr>
-                                    <tr>
-                                        <td>公积金比率</td>
-                                        <td>{{scope.row.salary.accumulationFundPer}}</td>
-                                    </tr>
-                                    <tr>
-                                        <td>公积金基数</td>
-                                        <td>{{scope.row.salary.accumulationFundBase}}</td>
-                                    </tr>
-                                    <tr>
                                         <td>启用时间</td>
-                                        <td>{{scope.row.salary.createDate}}</td>
+                                        <td>{{scope.row.salary.createDate ? scope.row.salary.createDate.substring(0,10) : ''}}</td>
                                     </tr>
                                 </table>
                             </div></template>
                             <el-tag>{{scope.row.salary.name}}</el-tag>
                         </el-tooltip>
-                        <el-tag v-else>暂未设置</el-tag>
+                        <el-tag v-else type="info">暂未签约方案</el-tag>
                     </template>
                 </el-table-column>
                 <el-table-column label="操作" align="center">
                     <template #default="scope">
                         <el-popover
                                 placement="left"
-                                title="修改工资账套"
+                                title="更换薪资方案"
                                 @show="showPop(scope.row.salary)"
                                 @hide="hidePop(scope.row)"
                                 width="200"
@@ -83,7 +63,7 @@
                                     </el-option>
                                 </el-select>
                             </div>
-                            <template #reference><el-button type="danger">修改工资账套</el-button></template>
+                            <template #reference><el-button type="danger">更换薪资方案</el-button></template>
                         </el-popover>
                     </template>
                 </el-table-column>
@@ -102,6 +82,7 @@
 </template>
 
 <script>
+    //选手薪资设置：为每位选手绑定薪资方案（原五险一金展示项与 CS 战队合同无关，已移除）
     export default {
         name: "SalSobCfg",
         data() {

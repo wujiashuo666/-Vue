@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
@@ -54,6 +55,32 @@ public class EsportsController {
         return esportsService.getMatches();
     }
 
+    /* ------------------------- 玩大手操纵比赛 ------------------------- */
+
+    /** 某赛事的晋级/淘汰标记列表 */
+    @GetMapping("/control/progress/{tournamentId}")
+    public List<java.util.Map<String, Object>> progress(@PathVariable Integer tournamentId) {
+        return esportsService.getProgress(tournamentId);
+    }
+
+    /**
+     * 操纵比赛判定：标记某战队在该赛事中晋级(advanced)或淘汰(eliminated)。
+     * 比赛比分本身通过已有的 PUT /esports/match 操纵。
+     */
+    @PostMapping("/control/progress")
+    public RespBean setProgress(@RequestBody java.util.Map<String, Object> body) {
+        Integer tournamentId = body.get("tournamentId") == null ? null : Integer.valueOf(body.get("tournamentId").toString());
+        Integer teamId = body.get("teamId") == null ? null : Integer.valueOf(body.get("teamId").toString());
+        String result = (String) body.get("result");
+        return esportsService.setProgress(tournamentId, teamId, result);
+    }
+
+    /** 撤销某战队在该赛事中的晋级/淘汰判定 */
+    @DeleteMapping("/control/progress")
+    public RespBean revokeProgress(@RequestParam Integer tournamentId, @RequestParam Integer teamId) {
+        return esportsService.revokeProgress(tournamentId, teamId);
+    }
+
     @GetMapping("/team-stats")
     public List<EsTeamStatVO> teamStats() {
         return esportsService.getTeamStats();
@@ -74,6 +101,21 @@ public class EsportsController {
         return esportsService.deleteTeam(id);
     }
 
+    @PostMapping("/player")
+    public RespBean addPlayer(@RequestBody EsPlayer player) {
+        return esportsService.addPlayer(player);
+    }
+
+    @PutMapping("/player")
+    public RespBean updatePlayer(@RequestBody EsPlayer player) {
+        return esportsService.updatePlayer(player);
+    }
+
+    @DeleteMapping("/player/{id}")
+    public RespBean deletePlayer(@PathVariable Integer id) {
+        return esportsService.deletePlayer(id);
+    }
+
     @PostMapping("/match")
     public RespBean addMatch(@RequestBody EsMatch match) {
         return esportsService.addMatch(match);
@@ -87,5 +129,20 @@ public class EsportsController {
     @DeleteMapping("/match/{id}")
     public RespBean deleteMatch(@PathVariable Integer id) {
         return esportsService.deleteMatch(id);
+    }
+
+    @PostMapping("/tournament")
+    public RespBean addTournament(@RequestBody EsTournament tournament) {
+        return esportsService.addTournament(tournament);
+    }
+
+    @PutMapping("/tournament")
+    public RespBean updateTournament(@RequestBody EsTournament tournament) {
+        return esportsService.updateTournament(tournament);
+    }
+
+    @DeleteMapping("/tournament/{id}")
+    public RespBean deleteTournament(@PathVariable Integer id) {
+        return esportsService.deleteTournament(id);
     }
 }

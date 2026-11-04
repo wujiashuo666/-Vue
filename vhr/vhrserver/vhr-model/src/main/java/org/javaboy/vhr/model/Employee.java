@@ -22,11 +22,7 @@ public class Employee implements Serializable {
                 ", name='" + name + '\'' +
                 ", gender='" + gender + '\'' +
                 ", birthday=" + birthday +
-                ", idCard='" + idCard + '\'' +
-                ", wedlock='" + wedlock + '\'' +
-                ", nationId=" + nationId +
                 ", nativePlace='" + nativePlace + '\'' +
-                ", politicId=" + politicId +
                 ", email='" + email + '\'' +
                 ", phone='" + phone + '\'' +
                 ", address='" + address + '\'' +
@@ -46,8 +42,6 @@ public class Employee implements Serializable {
                 ", beginContract=" + beginContract +
                 ", endContract=" + endContract +
                 ", workAge=" + workAge +
-                ", nation=" + nation +
-                ", politicsstatus=" + politicsstatus +
                 ", department=" + department +
                 ", jobLevel=" + jobLevel +
                 ", position=" + position +
@@ -57,15 +51,7 @@ public class Employee implements Serializable {
     @JsonFormat(pattern = "yyyy-MM-dd",timezone = "Asia/Shanghai")
     private Date birthday;
 
-    private String idCard;
-
-    private String wedlock;
-
-    private Integer nationId;
-
     private String nativePlace;
-
-    private Integer politicId;
 
     private String email;
 
@@ -112,8 +98,14 @@ public class Employee implements Serializable {
 
     private String userface;
 
-    private Nation nation;
-    private Politicsstatus politicsstatus;
+    public String getUserface() {
+        return userface;
+    }
+
+    public void setUserface(String userface) {
+        this.userface = userface;
+    }
+
     private Department department;
     private JobLevel jobLevel;
     private Position position;
@@ -125,21 +117,6 @@ public class Employee implements Serializable {
 
     public void setSalary(Salary salary) {
         this.salary = salary;
-    }
-    public Nation getNation() {
-        return nation;
-    }
-
-    public void setNation(Nation nation) {
-        this.nation = nation;
-    }
-
-    public Politicsstatus getPoliticsstatus() {
-        return politicsstatus;
-    }
-
-    public void setPoliticsstatus(Politicsstatus politicsstatus) {
-        this.politicsstatus = politicsstatus;
     }
 
     public Department getDepartment() {
@@ -198,44 +175,12 @@ public class Employee implements Serializable {
         this.birthday = birthday;
     }
 
-    public String getIdCard() {
-        return idCard;
-    }
-
-    public void setIdCard(String idCard) {
-        this.idCard = idCard;
-    }
-
-    public String getWedlock() {
-        return wedlock;
-    }
-
-    public void setWedlock(String wedlock) {
-        this.wedlock = wedlock;
-    }
-
-    public Integer getNationId() {
-        return nationId;
-    }
-
-    public void setNationId(Integer nationId) {
-        this.nationId = nationId;
-    }
-
     public String getNativePlace() {
         return nativePlace;
     }
 
     public void setNativePlace(String nativePlace) {
         this.nativePlace = nativePlace;
-    }
-
-    public Integer getPoliticId() {
-        return politicId;
-    }
-
-    public void setPoliticId(Integer politicId) {
-        this.politicId = politicId;
     }
 
     public String getEmail() {

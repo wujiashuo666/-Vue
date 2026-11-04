@@ -32,17 +32,15 @@ export const initMenu = (router, store) => {
     return getRequest("/system/config/menu").then(data => {
         if (data) {
             let fmtRoutes = formatRoutes(data);
-            //赛事中心必须作为 Home 的子路由注册：直接 addRoute 成顶层路由的话
-            //页面会脱离侧边栏/顶栏框架全屏渲染，进去之后无法返回其他页面
-            fmtRoutes.forEach(route => {
-                if (route.path === '/') {
-                    route.children = [...(route.children || []), ...matchRoutes];
-                }
-                router.addRoute(route);
-            })
+            //路由注册说明：/emp/** 等后端菜单路由由下面的 addRoute 动态注册；
+            ///match/** 比赛中心路由与 hrinfo 一起在 router.js 中静态注册
+            //（作为 Home 的子路由，页面带侧边栏/顶栏框架）。
+            //此前曾在这里等 path='/' 的路由出现后把 matchRoutes 合并为其 children，
+            //但 /system/config/menu 返回的顶级路由 path 全部是 /home，条件永远不成立，
+            //导致 /match/* 路由从未注册、点击比赛中心菜单没有反应，故改为静态注册
+            fmtRoutes.forEach(route => router.addRoute(route));
             //侧边栏展示用原始菜单数据（路由表中的 name 因唯一性要求可能被重命名）
             store.commit('initRoutes', [...data, matchMenu]);
-            store.dispatch('connect');
         }
     })
 }

@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
@@ -43,6 +44,7 @@ public class EsportsService {
             vo.setRegion(t.getRegion());
             vo.setWorldRank(t.getWorldRank());
             vo.setColor(new String[]{t.getColor1(), t.getColor2()});
+            vo.setLogo(t.getLogo());
             return vo;
         }).collect(Collectors.toList());
     }
@@ -163,6 +165,10 @@ public class EsportsService {
     }
 
     public RespBean deleteTeam(Integer id) {
+        //es_match 没有外键约束，先手动检查比赛引用，避免历史比赛对阵显示为未知战队
+        if (esportsMapper.countMatchesByTeamId(id) > 0) {
+            return RespBean.error("该战队已参与比赛，请先删除或调整相关比赛");
+        }
         try {
             if (esportsMapper.deleteTeam(id) == 1) {
                 return RespBean.ok("删除成功");
@@ -277,5 +283,178 @@ public class EsportsService {
             mp.setLive(Boolean.TRUE.equals(mp.getLive()));
             esportsMapper.addMatchMap(mp);
         }
+    }
+
+    /* ------------------------- 玩大手操纵比赛 ------------------------- */
+
+    private static final List<String> PROGRESS_RESULTS = Arrays.asList("advanced", "eliminated");
+
+    /**
+     * 玩大手操纵比赛结果：标记某战队在该赛事中晋级或淘汰。
+     * 同一赛事同一战队只保留最新判定结果，重新判定时覆盖。
+     */
+    @Transactional(rollbackFor = Exception.class)
+    public RespBean setProgress(Integer tournamentId, Integer teamId, String result) {
+        if (tournamentId == null) {
+            return RespBean.error("请选择赛事");
+        }
+        if (teamId == null || esportsMapper.countTeamById(teamId) == 0) {
+            return RespBean.error("战队不存在");
+        }
+        if (result == null || !PROGRESS_RESULTS.contains(result)) {
+            return RespBean.error("判定结果只能是晋级或淘汰");
+        }
+        if (esportsMapper.countMatchesByTournamentId(tournamentId) == 0) {
+            return RespBean.error("该赛事下没有比赛记录");
+        }
+        esportsMapper.deleteProgress(tournamentId, teamId);
+        esportsMapper.insertProgress(tournamentId, teamId, result);
+        return RespBean.ok("已判定");
+    }
+
+    /** 某赛事的晋级/淘汰标记列表（带战队图标等展示信息） */
+    public List<Map<String, Object>> getProgress(Integer tournamentId) {
+        return esportsMapper.selectProgress(tournamentId);
+    }
+
+    /** 撤销判定：删除某战队在该赛事中的晋级/淘汰标记 */
+    public RespBean revokeProgress(Integer tournamentId, Integer teamId) {
+        if (tournamentId == null || teamId == null) {
+            return RespBean.error("缺少赛事或战队参数");
+        }
+        esportsMapper.deleteProgress(tournamentId, teamId);
+        return RespBean.ok("已撤销");
+    }
+
+    /* ------------------------- 赛事维护 ------------------------- */
+
+    public RespBean addTournament(EsTournament tournament) {
+        String error = validateTournament(tournament, null);
+        if (error != null) {
+            return RespBean.error(error);
+        }
+        if (esportsMapper.addTournament(tournament) == 1) {
+            return RespBean.ok("添加成功", tournament);
+        }
+        return RespBean.error("添加失败");
+    }
+
+    public RespBean updateTournament(EsTournament tournament) {
+        if (tournament.getId() == null) {
+            return RespBean.error("缺少赛事 ID");
+        }
+        String error = validateTournament(tournament, tournament.getId());
+        if (error != null) {
+            return RespBean.error(error);
+        }
+        if (esportsMapper.updateTournament(tournament) == 1) {
+            return RespBean.ok("更新成功");
+        }
+        return RespBean.error("更新失败，记录不存在");
+    }
+
+    public RespBean deleteTournament(Integer id) {
+        //es_match.tournament_id 没有外键约束，删除前手动做引用检查，
+        //避免赛事被删掉后历史比赛的赛事名显示为空
+        if (esportsMapper.countMatchesByTournamentId(id) > 0) {
+            return RespBean.error("该赛事下已有比赛，请先删除或转移相关比赛");
+        }
+        if (esportsMapper.deleteTournament(id) == 1) {
+            return RespBean.ok("删除成功");
+        }
+        return RespBean.error("删除失败，记录不存在");
+    }
+
+    /**
+     * 校验赛事字段，返回 null 表示通过。
+     * excludeId 传更新记录的 id 用于排除自身重名，新增时为 null。
+     */
+    private String validateTournament(EsTournament tournament, Integer excludeId) {
+        if (tournament.getName() == null || tournament.getName().trim().isEmpty()) {
+            return "请填写赛事名称";
+        }
+        if (esportsMapper.countTournamentByName(tournament.getName().trim(), excludeId) > 0) {
+            return "赛事名称已存在";
+        }
+        //日期为 yyyy-MM-dd 格式，字典序比较即时间先后比较；两者都有值时才比较
+        if (tournament.getStartDate() != null && tournament.getEndDate() != null
+                && tournament.getEndDate().compareTo(tournament.getStartDate()) < 0) {
+            return "结束日期不能早于开始日期";
+        }
+        return null;
+    }
+
+    /* ------------------------- 选手维护 ------------------------- */
+
+    public RespBean addPlayer(EsPlayer player) {
+        String error = validatePlayer(player, null);
+        if (error != null) {
+            return RespBean.error(error);
+        }
+        if (esportsMapper.addPlayer(player) == 1) {
+            return RespBean.ok("添加成功", player);
+        }
+        return RespBean.error("添加失败");
+    }
+
+    public RespBean updatePlayer(EsPlayer player) {
+        if (player.getId() == null) {
+            return RespBean.error("缺少选手 ID");
+        }
+        String error = validatePlayer(player, player.getId());
+        if (error != null) {
+            return RespBean.error(error);
+        }
+        if (esportsMapper.updatePlayer(player) == 1) {
+            return RespBean.ok("更新成功");
+        }
+        return RespBean.error("更新失败，记录不存在");
+    }
+
+    public RespBean deletePlayer(Integer id) {
+        if (esportsMapper.deletePlayer(id) == 1) {
+            return RespBean.ok("删除成功");
+        }
+        return RespBean.error("删除失败，记录不存在");
+    }
+
+    /**
+     * 校验选手字段，返回 null 表示通过。
+     * excludeId 传更新记录的 id 用于排除自身重名，新增时为 null。
+     */
+    private String validatePlayer(EsPlayer player, Integer excludeId) {
+        if (player.getNick() == null || player.getNick().trim().isEmpty()) {
+            return "请填写选手游戏 ID";
+        }
+        if (esportsMapper.countPlayerByNick(player.getNick().trim(), excludeId) > 0) {
+            return "该游戏 ID 已存在";
+        }
+        if (player.getTeamId() == null || esportsMapper.countTeamById(player.getTeamId()) == 0) {
+            return "请选择选手所属战队";
+        }
+        //数值指标允许留空，填了就必须在合理范围内
+        String error = checkRange(player.getRating(), "Rating", "0", "3");
+        if (error != null) return error;
+        error = checkRange(player.getKd(), "K/D", "0", "5");
+        if (error != null) return error;
+        error = checkRange(player.getAdr(), "ADR", "0", "250");
+        if (error != null) return error;
+        error = checkRange(player.getKast(), "KAST", "0", "100");
+        if (error != null) return error;
+        if (player.getMaps() != null && player.getMaps() < 0) {
+            return "地图数不能小于 0";
+        }
+        return null;
+    }
+
+    /** 数值范围为闭区间，value 为 null 表示未填写，直接通过 */
+    private String checkRange(BigDecimal value, String label, String min, String max) {
+        if (value == null) {
+            return null;
+        }
+        if (value.compareTo(new BigDecimal(min)) < 0 || value.compareTo(new BigDecimal(max)) > 0) {
+            return label + " 取值范围应在 " + min + " ~ " + max + " 之间";
+        }
+        return null;
     }
 }

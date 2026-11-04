@@ -54,8 +54,8 @@ public class MailReceiver {
     StringRedisTemplate redisTemplate;
 
     @RabbitListener(queues = MailConstants.MAIL_QUEUE_NAME)
-    public void handler(Message message, Channel channel) throws IOException {
-        Employee employee = (Employee) message.getPayload();
+    public void handler(Message<Employee> message, Channel channel) throws IOException {
+        Employee employee = message.getPayload();
         MessageHeaders headers = message.getHeaders();
         Long tag = (Long) headers.get(AmqpHeaders.DELIVERY_TAG);
         String msgId = (String) headers.get(CORRELATION_ID_HEADER);

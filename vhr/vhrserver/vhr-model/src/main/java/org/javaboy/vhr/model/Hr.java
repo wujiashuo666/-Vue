@@ -30,7 +30,14 @@ public class Hr implements UserDetails {
     private String userface;
 
     private String remark;
+
     private List<Role> roles;
+
+    /** 新增操作员时一并提交的角色 id 列表，仅作请求载体，不映射数据库 */
+    private Integer[] roleIds;
+
+    public Integer[] getRoleIds() { return roleIds; }
+    public void setRoleIds(Integer[] roleIds) { this.roleIds = roleIds; }
 
     @Override
     public boolean equals(Object o) {

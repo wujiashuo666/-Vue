@@ -17,7 +17,7 @@
           {{ tab.label }}
           <span class="tab-count">{{ tabCount(tab.key) }}</span>
         </button>
-        <el-button class="manage-btn" size="small" @click="$router.push('/match/manage')">管理比赛</el-button>
+        <el-button class="manage-btn" size="small" @click="$router.push('/matchcenter/manage')">管理比赛</el-button>
       </div>
     </div>
 
@@ -68,7 +68,10 @@
 
         <div class="match-info">
           <div class="team team-left">
-            <div class="team-badge" :style="badgeStyle(match.team1)">{{ match.team1.short }}</div>
+            <div class="team-badge" :style="badgeStyle(match.team1)">
+              <img v-if="match.team1.logo" :src="match.team1.logo" :alt="match.team1.name" />
+              <span v-else>{{ match.team1.short }}</span>
+            </div>
             <span class="team-name">{{ match.team1.name }}</span>
           </div>
 
@@ -91,7 +94,10 @@
 
           <div class="team team-right">
             <span class="team-name">{{ match.team2.name }}</span>
-            <div class="team-badge" :style="badgeStyle(match.team2)">{{ match.team2.short }}</div>
+            <div class="team-badge" :style="badgeStyle(match.team2)">
+              <img v-if="match.team2.logo" :src="match.team2.logo" :alt="match.team2.name" />
+              <span v-else>{{ match.team2.short }}</span>
+            </div>
           </div>
         </div>
 
@@ -124,7 +130,10 @@
       <div v-if="detail" class="detail-body">
         <div class="detail-hero">
           <div class="hero-team">
-            <div class="team-badge lg" :style="badgeStyle(detail.team1)">{{ detail.team1.short }}</div>
+            <div class="team-badge lg" :style="badgeStyle(detail.team1)">
+              <img v-if="detail.team1.logo" :src="detail.team1.logo" :alt="detail.team1.name" />
+              <span v-else>{{ detail.team1.short }}</span>
+            </div>
             <div class="hero-name">{{ detail.team1.name }}</div>
             <div class="hero-rank">世界排名 #{{ detail.team1.worldRank }}</div>
           </div>
@@ -143,7 +152,10 @@
             </template>
           </div>
           <div class="hero-team">
-            <div class="team-badge lg" :style="badgeStyle(detail.team2)">{{ detail.team2.short }}</div>
+            <div class="team-badge lg" :style="badgeStyle(detail.team2)">
+              <img v-if="detail.team2.logo" :src="detail.team2.logo" :alt="detail.team2.name" />
+              <span v-else>{{ detail.team2.short }}</span>
+            </div>
             <div class="hero-name">{{ detail.team2.name }}</div>
             <div class="hero-rank">世界排名 #{{ detail.team2.worldRank }}</div>
           </div>
@@ -537,6 +549,13 @@ export default {
   text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
 }
 .team-badge.lg { width: 54px; height: 54px; font-size: 15px; border-radius: 14px; }
+.team-badge img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  padding: 3px;
+  filter: drop-shadow(0 1px 3px rgba(0, 0, 0, 0.6));
+}
 .team-name {
   font-size: 16px;
   font-weight: 600;

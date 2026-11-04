@@ -7,8 +7,9 @@
         <span class="logo-text">职业选手库</span>
       </div>
       <div class="top-right">
-        <el-input v-model="keywords" placeholder="搜索选手..." class="search" @keyup.enter="searchPlayer" clearable>
-          <i slot="prefix" class="el-icon-search"></i>
+        <el-input v-model="keywords" placeholder="搜索选手..." class="search" @keyup.enter="searchPlayer"
+                  @clear="keywords='';searchPlayer()" clearable>
+          <template #prefix><el-icon><Search/></el-icon></template>
         </el-input>
         <el-button type="primary" round @click="openAddDialog">+ 添加</el-button>
       </div>
@@ -24,19 +25,26 @@
       <span class="filter-item" :class="{ active: filterPosition === '自由人' }" @click="filterPosition = '自由人'">自由人</span>
     </div>
 
-    <!-- 战队分组 -->
-    <div v-for="(players, teamName) in groupedPlayers" :key="teamName" class="team-section">
+    <!-- 战队分组（按 HLTV 排名排序） -->
+    <div v-for="group in groupedTeams" :key="group.name" class="team-section">
       <div class="team-header">
-        <span class="team-dot"></span>
-        <span class="team-name">{{ teamName }}</span>
-        <span class="team-count">{{ players.length }}</span>
+        <img v-if="group.logo" :src="group.logo" class="team-logo-sm" :alt="group.name" />
+        <span class="team-rank">#{{ group.rank }}</span>
+        <span class="team-name">{{ group.name }}</span>
+        <span class="team-count">{{ group.players.length }}</span>
       </div>
       <div class="player-grid">
-        <div v-for="player in players" :key="player.id" class="player-card" @click="openEditDialog(player)">
+        <div v-for="player in group.players" :key="player.id" class="player-card" @click="openEditDialog(player)">
           <div class="card-img">
-            <img v-if="player.userface" :src="player.userface" :alt="player.name" />
+            <!-- 战队标作为选手照片的背景 -->
+            <div v-if="player.department && player.department.logo" class="team-logo-bg"
+                 :style="{ backgroundImage: 'url(' + player.department.logo + ')' }"></div>
+            <img v-if="player.userface" :src="player.userface" :alt="player.name" class="p-img" />
             <div v-else class="img-placeholder">{{ player.name.charAt(0) }}</div>
             <span class="pos-tag" :class="getPositionClass(player.specialty)">{{ player.specialty }}</span>
+            <div v-if="player.department && player.department.logo" class="card-team-badge">
+              <img :src="player.department.logo" :alt="player.department.name" />
+            </div>
           </div>
           <div class="card-body">
             <div class="p-name">{{ player.name }}</div>
@@ -88,25 +96,7 @@ export default {
       playerList: [],
       editDialogVisible: false,
       currentPlayer: {},
-      teamList: [
-        { id: 1, name: 'Vitality' },
-        { id: 2, name: 'MOUZ' },
-        { id: 3, name: 'Team Spirit' },
-        { id: 4, name: 'Aurora' },
-        { id: 5, name: 'FURIA' },
-        { id: 6, name: 'Falcons' },
-        { id: 7, name: 'Astralis' },
-        { id: 8, name: 'G2 Esports' },
-        { id: 9, name: 'The MongolZ' },
-        { id: 10, name: 'NAVI' },
-        { id: 11, name: 'Team Liquid' },
-        { id: 12, name: 'Fnatic' },
-        { id: 13, name: 'Legacy' },
-        { id: 14, name: 'TYLOO' },
-        { id: 15, name: 'Lynn Vision' },
-        { id: 16, name: 'FaZe Clan' },
-        { id: 17, name: 'paiN' }
-      ]
+      teamList: []
     }
   },
   computed: {
@@ -117,27 +107,42 @@ export default {
       }
       return list
     },
-    groupedPlayers() {
+    // 按战队 HLTV 排名分组排序（无排名的排最后）
+    groupedTeams() {
       const groups = {}
       this.filteredPlayers.forEach(p => {
-        const team = p.department ? p.department.name : '未分配战队'
-        if (!groups[team]) groups[team] = []
-        groups[team].push(p)
+        const dep = p.department
+        const key = dep ? dep.name : '未分配战队'
+        if (!groups[key]) {
+          groups[key] = {
+            name: key,
+            rank: (dep && dep.rankNum) || 999,
+            logo: (dep && dep.logo) || '',
+            players: []
+          }
+        }
+        groups[key].players.push(p)
       })
-      return groups
+      return Object.values(groups).sort((a, b) => a.rank - b.rank)
     }
   },
   mounted() {
+    this.loadTeams()
     this.loadPlayers()
   },
   methods: {
+    loadTeams() {
+      this.getRequest('/system/basic/department/').then(resp => {
+        if (resp) this.teamList = resp
+      })
+    },
     loadPlayers() {
-      this.getRequest('/employee/basic/?page=1&size=200').then(resp => {
+      this.getRequest('/employee/basic/?page=1&size=500').then(resp => {
         if (resp && resp.data) this.playerList = resp.data
       })
     },
     searchPlayer() {
-      this.getRequest('/employee/basic/?page=1&size=200&name=' + this.keywords).then(resp => {
+      this.getRequest('/employee/basic/?page=1&size=500&name=' + this.keywords).then(resp => {
         if (resp && resp.data) this.playerList = resp.data
       })
     },
@@ -307,12 +312,61 @@ export default {
   position: relative;
   width: 100%;
   aspect-ratio: 3/4;
-  background: rgba(255, 255, 255, 0.05);
+  background: linear-gradient(180deg, #1b2230 0%, #12161f 100%);
+  overflow: hidden;
 }
-.card-img img {
+/* 战队标作为背景水印 */
+.team-logo-bg {
+  position: absolute;
+  inset: 0;
+  background-repeat: no-repeat;
+  background-position: center 38%;
+  background-size: 78% auto;
+  opacity: 0.22;
+  filter: grayscale(15%) contrast(1.1);
+  z-index: 0;
+}
+.card-img .p-img {
+  position: relative;
+  z-index: 1;
   width: 100%;
   height: 100%;
   object-fit: cover;
+}
+/* 卡片右下角小队标 */
+.card-team-badge {
+  position: absolute;
+  right: 6px;
+  bottom: 6px;
+  z-index: 2;
+  width: 26px;
+  height: 26px;
+  border-radius: 4px;
+  background: rgba(0, 0, 0, 0.55);
+  padding: 2px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.card-team-badge img {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+}
+/* 分组标题的队标与排名 */
+.team-logo-sm {
+  width: 22px;
+  height: 22px;
+  object-fit: contain;
+}
+.team-rank {
+  font-size: 12px;
+  font-weight: 700;
+  color: #ff4757;
+  background: rgba(255, 71, 87, 0.12);
+  border: 1px solid rgba(255, 71, 87, 0.35);
+  border-radius: 4px;
+  padding: 1px 6px;
 }
 .img-placeholder {
   width: 100%;

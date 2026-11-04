@@ -13,6 +13,15 @@ public class EsTeamVO {
     private String region;
     private Integer worldRank;
     private String[] color;
+    private String logo;
+
+    public String getLogo() {
+        return logo;
+    }
+
+    public void setLogo(String logo) {
+        this.logo = logo;
+    }
 
     public Integer getId() { return id; }
     public void setId(Integer id) { this.id = id; }

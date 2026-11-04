@@ -90,7 +90,22 @@ export default {
             });
         },
         initEmps() { this.getRequest('/personnel/remove/emps').then(resp => { if (resp) this.empList = resp; }); },
-        initDeps() { this.getRequest('/personnel/remove/deps').then(resp => { if (resp) this.depList = resp; }); },
+        //后端返回的是战队树（根节点嵌套 children），下拉框需要拍平成一维数组，
+        //否则 el-option 只能遍历到根节点，导致"调入战队"显示无数据
+        initDeps() {
+            this.getRequest('/personnel/remove/deps').then(resp => {
+                if (!resp) return;
+                const flat = [];
+                const walk = (nodes) => {
+                    (nodes || []).forEach(n => {
+                        flat.push({ id: n.id, name: n.name });
+                        if (n.children && n.children.length) walk(n.children);
+                    });
+                };
+                walk(resp);
+                this.depList = flat;
+            });
+        },
         initJobs() { this.getRequest('/personnel/remove/joblevels').then(resp => { if (resp) this.jobList = resp; }); },
         pageChange(p) { this.page = p; this.initMv(); },
         sizeChange(s) { this.size = s; this.page = 1; this.initMv(); },

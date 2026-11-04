@@ -8,13 +8,15 @@
         <result column="depPath" property="depPath" jdbcType="VARCHAR"/>
         <result column="enabled" property="enabled" jdbcType="BIT"/>
         <result column="isParent" property="isParent" jdbcType="BIT"/>
+        <result column="logo" property="logo" jdbcType="VARCHAR"/>
+        <result column="rank_num" property="rankNum" jdbcType="INTEGER"/>
     </resultMap>
     <resultMap id="DepartmentWithChildren" type="org.javaboy.vhr.model.Department" extends="BaseResultMap">
         <collection property="children" ofType="org.javaboy.vhr.model.Department"
                     select="org.javaboy.vhr.mapper.DepartmentMapper.getAllDepartmentsByParentId" column="id"/>
     </resultMap>
     <sql id="Base_Column_List">
-    id, name, parentId, depPath, enabled, isParent
+    id, name, parentId, depPath, enabled, isParent, logo, rank_num
   </sql>
     <select id="getAllDepartmentsWithOutChildren" resultMap="BaseResultMap">
         select

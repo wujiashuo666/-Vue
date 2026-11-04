@@ -110,7 +110,10 @@ public class SecurityConfig {
     SecurityFilterChain securityFilterChain(HttpSecurity http, LoginFilter loginFilter, SessionRegistryImpl sessionRegistry) throws Exception {
         http.authorizeHttpRequests(auth -> auth
                         //静态资源、验证码、登录接口直接放行
-                        .requestMatchers("/css/**", "/js/**", "/index.html", "/img/**", "/fonts/**", "/favicon.ico", "/verifyCode")
+                        .requestMatchers("/", "/index.html", "/favicon.ico", "/verifyCode",
+                        "/css/**", "/js/**", "/img/**", "/fonts/**",
+                        "/assets/**", "/avatar/**", "/logo/**", "/logos/**", "/faces/**", "/players/**",
+                        "/*.jpg", "/*.png", "/*.gif", "/*.svg", "/*.ico", "/*.woff", "/*.woff2", "/*.ttf", "/*.map")
                         .permitAll()
                         //赛事中心：只读接口公开浏览，维护类接口需要登录
                         .requestMatchers(HttpMethod.GET, "/esports/**")

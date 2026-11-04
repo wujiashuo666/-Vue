@@ -1,48 +1,69 @@
 <template>
   <div class="login-page">
-    <div class="login-box">
-      <div class="brand">
-        <span class="brand-mark">CS</span>
-        <h2 class="title">职业选手管理系统</h2>
+    <!-- 左侧：CS 官方主视觉品牌区 -->
+    <div class="brand-side">
+      <div class="brand-inner">
+        <div class="game-art">
+          <img src="/cs2_header.jpg" alt="Counter-Strike 2" />
+        </div>
+        <h1 class="brand-title">职业选手管理系统</h1>
+        <p class="brand-tagline">COUNTER-STRIKE PLAYER MANAGEMENT SYSTEM</p>
+        <div class="brand-meta">
+          <span class="meta-item">TOURNAMENT · TEAM · PLAYER · STATS</span>
+        </div>
       </div>
-      <p class="subtitle">欢迎回来，请登录</p>
+      <div class="brand-footer">CS-ESPORTS OPS / v2.0</div>
+    </div>
 
-      <el-form :model="loginForm" :rules="rules" ref="loginFormRef" class="form-area">
-        <el-form-item prop="username">
-          <el-input
-            v-model="loginForm.username"
-            placeholder="用户名"
-            size="large"
-            :prefix-icon="User"
-            @keyup.enter="submitLogin"
-          ></el-input>
-        </el-form-item>
-        <el-form-item prop="password">
-          <el-input
-            v-model="loginForm.password"
-            placeholder="密码"
-            size="large"
-            type="password"
-            show-password
-            :prefix-icon="Lock"
-            @keyup.enter="submitLogin"
-          ></el-input>
-        </el-form-item>
-        <el-button
-          type="primary"
-          size="large"
-          class="login-btn"
-          :loading="loading"
-          @click="submitLogin"
-        >登 录</el-button>
-      </el-form>
+    <!-- 右侧：登录区（垂直居中，极简风格） -->
+    <div class="login-side">
+      <div class="login-panel">
+        <img src="/cs2_logo.png" class="cs-logo" alt="Counter-Strike" />
+        <div class="panel-heading">
+          <span class="sign-en">SIGN IN</span>
+          <span class="sign-zh">登录操作台</span>
+        </div>
+
+        <el-form :model="loginForm" :rules="rules" ref="loginFormRef" class="form-area">
+          <el-form-item prop="username">
+            <el-input v-model="loginForm.username" placeholder="操作员账号" size="large" @keyup.enter="submitLogin">
+              <template #prefix>
+                <!-- CS 十字准星图标 -->
+                <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" class="field-icon">
+                  <circle cx="12" cy="12" r="7" />
+                  <line x1="12" y1="1.5" x2="12" y2="5" />
+                  <line x1="12" y1="19" x2="12" y2="22.5" />
+                  <line x1="1.5" y1="12" x2="5" y2="12" />
+                  <line x1="19" y1="12" x2="22.5" y2="12" />
+                </svg>
+              </template>
+            </el-input>
+          </el-form-item>
+          <el-form-item prop="password">
+            <el-input v-model="loginForm.password" placeholder="密码" size="large" type="password" show-password @keyup.enter="submitLogin">
+              <template #prefix>
+                <!-- 盾牌图标 -->
+                <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" class="field-icon">
+                  <path d="M12 2 L20 5.5 V11 C20 16.5 16.5 20.5 12 22 C7.5 20.5 4 16.5 4 11 V5.5 Z" />
+                  <polyline points="9 11.5 11.2 13.7 15 9.5" />
+                </svg>
+              </template>
+            </el-input>
+          </el-form-item>
+          <button class="login-btn" :disabled="loading" @click="submitLogin">
+            {{ loading ? '验证中…' : '进 入 系 统' }}
+          </button>
+        </el-form>
+
+        <div class="panel-foot">
+          <span>AUTHORIZED PERSONNEL ONLY</span>
+        </div>
+      </div>
     </div>
   </div>
 </template>
 
 <script>
-import { User, Lock } from '@element-plus/icons-vue'
-
 export default {
   name: 'Login',
   data() {
@@ -53,14 +74,10 @@ export default {
         password: ''
       },
       rules: {
-        username: [{ required: true, message: '请输入用户名', trigger: 'blur' }],
+        username: [{ required: true, message: '请输入操作员账号', trigger: 'blur' }],
         password: [{ required: true, message: '请输入密码', trigger: 'blur' }]
       }
     }
-  },
-  setup() {
-    // 模板里直接引用图标组件
-    return { User, Lock }
   },
   methods: {
     submitLogin() {
@@ -72,7 +89,7 @@ export default {
           if (resp) {
             this.$store.commit('INIT_CURRENTHR', resp.obj)
             window.sessionStorage.setItem('user', JSON.stringify(resp.obj))
-            this.$router.replace('/emp/basic')
+            this.$router.replace('/player')
           }
         }).catch(() => {
           // 请求失败或校验不通过时必须复位 loading，否则按钮会一直转圈
@@ -88,106 +105,209 @@ export default {
 .login-page {
   min-height: 100vh;
   background: #0b0e14;
-  display: flex;
-  align-items: center;
-  justify-content: center;
   position: relative;
+  display: flex;
 }
 
-/* 背景图压暗后作底纹 */
+/* 背景图压暗后作底纹（保持原图不变，仅压暗） */
 .login-page::before {
   content: '';
   position: absolute;
   inset: 0;
   background: url('/login-bg.jpg') no-repeat center center fixed;
   background-size: cover;
-  opacity: 0.22;
-  filter: saturate(0.85);
+  opacity: 0.18;
+  filter: saturate(0.8);
+  pointer-events: none;
 }
 
-.login-box {
+/* ---------------- 左侧品牌区 ---------------- */
+.brand-side {
   position: relative;
   z-index: 1;
-  width: 380px;
-  padding: 40px;
-  background: rgba(20, 26, 34, 0.92);
-  border: 1px solid #232b36;
-  border-radius: 16px;
-  box-shadow: 0 18px 50px rgba(0, 0, 0, 0.55);
+  flex: 1.4;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 60px 72px;
+}
+.brand-inner {
+  max-width: 560px;
+}
+.game-art {
+  width: 100%;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  box-shadow: 0 24px 70px rgba(0, 0, 0, 0.6);
+}
+.game-art img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+.brand-title {
+  margin: 34px 0 10px;
+  font-size: 30px;
+  font-weight: 600;
+  letter-spacing: 6px;
+  color: #eef2f6;
+}
+.brand-tagline {
+  margin: 0;
+  font-size: 12px;
+  letter-spacing: 3.5px;
+  color: #ff8a00;
+  font-weight: 600;
+}
+.brand-meta {
+  margin-top: 26px;
+  padding-top: 18px;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+.meta-item {
+  font-size: 11px;
+  letter-spacing: 2px;
+  color: #6e7681;
+  font-family: Consolas, monospace;
+}
+.brand-footer {
+  position: absolute;
+  left: 72px;
+  bottom: 28px;
+  font-size: 11px;
+  letter-spacing: 2px;
+  color: #4d5560;
+  font-family: Consolas, monospace;
 }
 
-.brand {
+/* ---------------- 右侧登录区 ---------------- */
+.login-side {
+  position: relative;
+  z-index: 1;
+  flex: 1;
   display: flex;
   align-items: center;
   justify-content: center;
+  border-left: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(13, 17, 23, 0.55);
+  backdrop-filter: blur(6px);
+  padding: 40px;
+}
+.login-panel {
+  width: 320px;
+}
+/* 官方 logo 为白底深字，反相 + screen 混合后呈现为黑底白字，
+   在深色页面上等效于透明底白字 */
+.cs-logo {
+  display: block;
+  width: 190px;
+  margin-bottom: 46px;
+  filter: invert(1);
+  mix-blend-mode: screen;
+}
+.panel-heading {
+  display: flex;
+  align-items: baseline;
   gap: 10px;
+  margin-bottom: 30px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 }
-.brand-mark {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 34px;
-  height: 34px;
-  border-radius: 9px;
-  background: linear-gradient(135deg, #ff4655, #ff8a00);
-  color: #fff;
-  font-weight: 800;
-  font-size: 14px;
-}
-.title {
-  margin: 0;
-  font-size: 21px;
+.sign-en {
+  font-size: 15px;
   font-weight: 700;
-  color: #e6edf3;
-  text-align: center;
+  letter-spacing: 4px;
+  color: #eef2f6;
 }
-.subtitle {
-  margin: 10px 0 28px;
-  font-size: 13px;
-  color: #8b949e;
-  text-align: center;
+.sign-zh {
+  font-size: 11px;
+  letter-spacing: 2px;
+  color: #6e7681;
 }
+
+/* ---------------- 表单 ---------------- */
 .form-area {
   margin-bottom: 0;
 }
-
-/* Vue 3 已废弃 >>>，改用 :deep()，否则深层样式不生效 */
+.field-icon {
+  color: #ff8a00;
+  opacity: 0.9;
+}
 .form-area :deep(.el-input__wrapper) {
-  background: #0f141b;
-  border: 1px solid #2a323d;
-  border-radius: 8px;
+  background: rgba(0, 0, 0, 0.35);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 2px;
   box-shadow: none;
-  height: 44px;
+  height: 46px;
 }
 .form-area :deep(.el-input__wrapper:hover) {
-  border-color: #3f4a59;
+  border-color: rgba(255, 138, 0, 0.45);
 }
 .form-area :deep(.el-input__wrapper.is-focus) {
-  border-color: #ff4655;
-  box-shadow: 0 0 0 1px rgba(255, 70, 85, 0.35);
+  border-color: #ff8a00;
+  box-shadow: none;
 }
 .form-area :deep(.el-input__inner) {
-  color: #e6edf3;
+  color: #eef2f6;
+  letter-spacing: 1px;
 }
 .form-area :deep(.el-input__inner::placeholder) {
-  color: #6e7681;
+  color: #58606a;
+  letter-spacing: 2px;
+}
+.form-area :deep(.el-input__prefix) {
+  color: #ff8a00;
 }
 .form-area :deep(.el-form-item__error) {
-  color: #ff4655;
+  color: #ff8a00;
 }
 
 .login-btn {
   width: 100%;
-  height: 44px;
-  margin-top: 4px;
-  background: linear-gradient(135deg, #ff4655, #ff8a00);
-  border: none;
-  border-radius: 8px;
-  font-size: 16px;
+  height: 46px;
+  margin-top: 6px;
+  border: 1px solid #ff8a00;
+  background: transparent;
+  color: #ff8a00;
+  font-size: 14px;
   font-weight: 600;
-  letter-spacing: 2px;
+  letter-spacing: 5px;
+  cursor: pointer;
+  border-radius: 2px;
+  transition: all 0.2s;
+  font-family: inherit;
 }
-.login-btn:hover {
-  background: linear-gradient(135deg, #ff5c68, #ff9a1f);
+.login-btn:hover:not(:disabled) {
+  background: #ff8a00;
+  color: #0b0e14;
+}
+.login-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.panel-foot {
+  margin-top: 34px;
+  text-align: center;
+  font-size: 10px;
+  letter-spacing: 2.5px;
+  color: #3d444d;
+  font-family: Consolas, monospace;
+}
+
+/* 小屏降级：上下堆叠 */
+@media (max-width: 900px) {
+  .login-page {
+    flex-direction: column;
+  }
+  .brand-side {
+    padding: 40px 28px 12px;
+  }
+  .login-side {
+    border-left: none;
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+  }
+  .brand-footer {
+    display: none;
+  }
 }
 </style>

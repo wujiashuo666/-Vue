@@ -46,6 +46,26 @@ public class Department implements Serializable {
     private List<Department> children = new ArrayList<>();
     private Integer result;
 
+    private String logo;
+
+    private Integer rankNum;
+
+    public String getLogo() {
+        return logo;
+    }
+
+    public void setLogo(String logo) {
+        this.logo = logo;
+    }
+
+    public Integer getRankNum() {
+        return rankNum;
+    }
+
+    public void setRankNum(Integer rankNum) {
+        this.rankNum = rankNum;
+    }
+
     public Integer getResult() {
         return result;
     }

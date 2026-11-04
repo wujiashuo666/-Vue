@@ -10,6 +10,7 @@
     <result column="world_rank" property="worldRank" jdbcType="INTEGER" />
     <result column="color1" property="color1" jdbcType="VARCHAR" />
     <result column="color2" property="color2" jdbcType="VARCHAR" />
+    <result column="logo" property="logo" jdbcType="VARCHAR" />
   </resultMap>
 
   <resultMap id="EsPlayerMap" type="org.javaboy.vhr.model.EsPlayer" >
@@ -28,6 +29,10 @@
   <resultMap id="EsTournamentMap" type="org.javaboy.vhr.model.EsTournament" >
     <id column="id" property="id" jdbcType="INTEGER" />
     <result column="name" property="name" jdbcType="VARCHAR" />
+    <result column="region" property="region" jdbcType="VARCHAR" />
+    <result column="start_date" property="startDate" jdbcType="VARCHAR" />
+    <result column="end_date" property="endDate" jdbcType="VARCHAR" />
+    <result column="match_count" property="matchCount" jdbcType="INTEGER" />
   </resultMap>
 
   <!-- 比赛含逐图比分：用于战绩推导（实体） -->
@@ -53,6 +58,7 @@
   <!-- 比赛返回对象：带赛事名 + 逐图比分，start_time 直接输出 ISO 字符串 -->
   <resultMap id="EsMatchVOResult" type="org.javaboy.vhr.model.EsMatchVO" >
     <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="tournament_id" property="tournamentId" jdbcType="INTEGER" />
     <result column="tournament" property="tournament" jdbcType="VARCHAR" />
     <result column="stage" property="stage" jdbcType="VARCHAR" />
     <result column="bo" property="bo" jdbcType="INTEGER" />
@@ -71,7 +77,7 @@
   </resultMap>
 
   <select id="selectTeams" resultMap="EsTeamMap">
-    select id, name, short_name, region, world_rank, color1, color2 from es_team order by world_rank
+    select id, name, short_name, region, world_rank, color1, color2, logo from es_team order by world_rank
   </select>
 
   <select id="selectPlayers" resultMap="EsPlayerMap">
@@ -79,11 +85,16 @@
   </select>
 
   <select id="selectTournaments" resultMap="EsTournamentMap">
-    select id, name from es_tournament order by id
+    select t.id, t.name, t.region,
+           date_format(t.start_date, '%Y-%m-%d') as start_date,
+           date_format(t.end_date, '%Y-%m-%d') as end_date,
+           (select count(*) from es_match m where m.tournament_id = t.id) as match_count
+    from es_tournament t
+    order by t.id
   </select>
 
   <select id="selectMatches" resultMap="EsMatchVOResult">
-    select m.id, t.name as tournament, m.stage, m.bo, m.status, m.team1_id, m.team2_id,
+    select m.id, m.tournament_id, t.name as tournament, m.stage, m.bo, m.status, m.team1_id, m.team2_id,
            date_format(m.start_time, '%Y-%m-%dT%H:%i:%s') as start_time,
            mm.id as m_id, mm.map_order as m_map_order, mm.map_name as m_map_name,
            mm.score1 as m_score1, mm.score2 as m_score2, mm.live as m_live
@@ -119,6 +130,10 @@
     delete from es_team where id = #{id}
   </delete>
 
+  <select id="countMatchesByTeamId" resultType="int">
+    select count(*) from es_match where team1_id = #{teamId} or team2_id = #{teamId}
+  </select>
+
   <!-- 比赛（系列赛）维护：比赛本身与逐图比分分成两段写入，
        修改时先清空该场比赛的逐图再重建，避免逐条比对新旧记录的复杂度 -->
   <insert id="addMatch" parameterType="org.javaboy.vhr.model.EsMatch" useGeneratedKeys="true" keyProperty="id">
@@ -150,5 +165,86 @@
     insert into es_match_map (match_id, map_order, map_name, score1, score2, live)
     values (#{matchId}, #{mapOrder}, #{name}, #{score1}, #{score2}, #{live})
   </insert>
+
+  <!-- 赛事维护：日期字段由前端传 yyyy-MM-dd 字符串，MySQL 隐式转换成 date -->
+  <insert id="addTournament" parameterType="org.javaboy.vhr.model.EsTournament" useGeneratedKeys="true" keyProperty="id">
+    insert into es_tournament (name, region, start_date, end_date)
+    values (#{name}, #{region}, #{startDate,jdbcType=VARCHAR}, #{endDate,jdbcType=VARCHAR})
+  </insert>
+
+  <update id="updateTournament" parameterType="org.javaboy.vhr.model.EsTournament">
+    update es_tournament
+    set name = #{name},
+        region = #{region},
+        start_date = #{startDate,jdbcType=VARCHAR},
+        end_date = #{endDate,jdbcType=VARCHAR}
+    where id = #{id}
+  </update>
+
+  <delete id="deleteTournament">
+    delete from es_tournament where id = #{id}
+  </delete>
+
+  <select id="countTournamentByName" resultType="int">
+    select count(*) from es_tournament where name = #{name}
+    <if test="excludeId != null">and id != #{excludeId}</if>
+  </select>
+
+  <select id="countMatchesByTournamentId" resultType="int">
+    select count(*) from es_match where tournament_id = #{tournamentId}
+  </select>
+
+  <!-- 选手维护 -->
+  <insert id="addPlayer" parameterType="org.javaboy.vhr.model.EsPlayer" useGeneratedKeys="true" keyProperty="id">
+    insert into es_player (team_id, nick, real_name, country, rating, kd, adr, kast, maps_cnt)
+    values (#{teamId}, #{nick}, #{name}, #{country}, #{rating}, #{kd}, #{adr}, #{kast}, #{maps})
+  </insert>
+
+  <update id="updatePlayer" parameterType="org.javaboy.vhr.model.EsPlayer">
+    update es_player
+    set team_id = #{teamId},
+        nick = #{nick},
+        real_name = #{name},
+        country = #{country},
+        rating = #{rating},
+        kd = #{kd},
+        adr = #{adr},
+        kast = #{kast},
+        maps_cnt = #{maps}
+    where id = #{id}
+  </update>
+
+  <delete id="deletePlayer">
+    delete from es_player where id = #{id}
+  </delete>
+
+  <select id="countTeamById" resultType="int">
+    select count(*) from es_team where id = #{id}
+  </select>
+
+  <select id="countPlayerByNick" resultType="int">
+    select count(*) from es_player where nick = #{nick}
+    <if test="excludeId != null">and id != #{excludeId}</if>
+  </select>
+
+  <!-- 赛事晋级/淘汰标记（玩大手操纵比赛） -->
+  <delete id="deleteProgress">
+    delete from es_tournament_progress where tournament_id = #{tournamentId} and team_id = #{teamId}
+  </delete>
+
+  <insert id="insertProgress">
+    insert into es_tournament_progress (tournament_id, team_id, result)
+    values (#{tournamentId}, #{teamId}, #{result})
+  </insert>
+
+  <select id="selectProgress" resultType="map">
+    select p.tournament_id as tournamentId, p.team_id as teamId, p.result,
+           t.name as teamName, t.short_name as shortName, t.logo, t.color1, t.color2,
+           t.world_rank as worldRank
+    from es_tournament_progress p
+    left join es_team t on p.team_id = t.id
+    where p.tournament_id = #{tournamentId}
+    order by p.result, t.world_rank
+  </select>
 
 </mapper>

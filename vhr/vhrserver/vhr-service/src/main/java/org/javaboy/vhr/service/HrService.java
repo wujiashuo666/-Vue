@@ -3,6 +3,7 @@ package org.javaboy.vhr.service;
 import org.javaboy.vhr.mapper.HrMapper;
 import org.javaboy.vhr.mapper.HrRoleMapper;
 import org.javaboy.vhr.model.Hr;
+import org.javaboy.vhr.model.RespBean;
 import org.javaboy.vhr.utils.HrUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -42,15 +43,47 @@ public class HrService implements UserDetailsService {
     @Transactional
     public boolean updateHrRole(Integer hrid, Integer[] rids) {
         hrRoleMapper.deleteByHrid(hrid);
+        //清空角色是合法操作：rids 为空时不再执行 addRole，
+        //否则 MyBatis foreach 对 null 求值会抛 BuilderException
+        if (rids == null || rids.length == 0) {
+            return true;
+        }
         return hrRoleMapper.addRole(hrid, rids) == rids.length;
+    }
+
+    /**
+     * 新增操作员：校验登录名唯一并加密初始密码，可选一并分配角色
+     */
+    @Transactional
+    public RespBean addHr(Hr hr) {
+        if (hr.getName() == null || hr.getName().trim().isEmpty()) {
+            return RespBean.error("请填写姓名");
+        }
+        if (hr.getUsername() == null || hr.getUsername().trim().isEmpty()) {
+            return RespBean.error("请填写登录用户名");
+        }
+        if (hrMapper.loadUserByUsername(hr.getUsername().trim()) != null) {
+            return RespBean.error("登录用户名已存在");
+        }
+        if (hr.getPassword() == null || hr.getPassword().trim().isEmpty()) {
+            return RespBean.error("请填写初始密码");
+        }
+        hr.setEnabled(true);
+        //初始密码落库前 BCrypt 加密，与登录流程保持一致
+        hr.setPassword(new BCryptPasswordEncoder().encode(hr.getPassword()));
+        if (hrMapper.insertSelective(hr) != 1) {
+            return RespBean.error("添加失败");
+        }
+        Integer[] roleIds = hr.getRoleIds();
+        if (roleIds != null && roleIds.length > 0) {
+            hrRoleMapper.deleteByHrid(hr.getId());
+            hrRoleMapper.addRole(hr.getId(), roleIds);
+        }
+        return RespBean.ok("添加成功", hr);
     }
 
     public Integer deleteHrById(Integer id) {
         return hrMapper.deleteByPrimaryKey(id);
-    }
-
-    public List<Hr> getAllHrsExceptCurrentHr() {
-        return hrMapper.getAllHrsExceptCurrentHr(HrUtils.getCurrentHr().getId());
     }
 
     /**

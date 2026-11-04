@@ -41,6 +41,9 @@
         <el-option label="1.20 以上" :value="1.2" />
       </el-select>
       <button class="reset-btn" @click="keyword = ''; teamId = ''; minRating = ''">重置</button>
+      <div class="spacer"></div>
+      <el-button type="success" @click="openAdd">+ 新增选手</el-button>
+      <el-button @click="loadData">刷新</el-button>
     </div>
 
     <el-table :data="filteredPlayers" class="player-table" :default-sort="{ prop: 'rating', order: 'descending' }">
@@ -62,7 +65,10 @@
       <el-table-column label="战队" min-width="150">
         <template #default="{ row }">
           <div class="team-cell">
-            <div class="team-badge" :style="badgeStyle(row.teamId)">{{ teamShort(row.teamId) }}</div>
+            <div class="team-badge" :style="badgeStyle(row.teamId)">
+              <img v-if="teamLogo(row.teamId)" :src="teamLogo(row.teamId)" :alt="teamName(row.teamId)" />
+              <span v-else>{{ teamShort(row.teamId) }}</span>
+            </div>
             <span>{{ teamName(row.teamId) }}</span>
           </div>
         </template>
@@ -94,9 +100,79 @@
         <template #default="{ row }">{{ fmt(row.kast, 1) }}%</template>
       </el-table-column>
       <el-table-column prop="maps" label="地图数" width="90" sortable />
+
+      <el-table-column label="操作" width="170" fixed="right">
+        <template #default="{ row }">
+          <el-button size="small" type="primary" @click="openEdit(row)">编辑</el-button>
+          <el-button size="small" type="danger" @click="removePlayer(row)">删除</el-button>
+        </template>
+      </el-table-column>
     </el-table>
 
     <el-empty v-if="!filteredPlayers.length" description="没有符合条件的选手" />
+
+    <!-- 选手维护弹窗：数据指标允许留空，由后续比赛统计补全 -->
+    <el-dialog v-model="dialogVisible" :title="dialogTitle" width="520px" append-to-body
+      :close-on-click-modal="false">
+      <el-form ref="formRef" :model="form" :rules="rules" label-width="90px">
+        <el-form-item label="游戏 ID" prop="nick">
+          <el-input v-model="form.nick" placeholder="如：ZywOo" maxlength="64"></el-input>
+        </el-form-item>
+        <el-form-item label="真实姓名" prop="name">
+          <el-input v-model="form.name" placeholder="如：Mathieu Herbaut" maxlength="128"></el-input>
+        </el-form-item>
+        <el-row :gutter="12">
+          <el-col :span="12">
+            <el-form-item label="所属战队" prop="teamId">
+              <el-select v-model="form.teamId" filterable placeholder="请选择战队" style="width: 100%">
+                <el-option v-for="t in teams" :key="t.id" :label="t.name" :value="t.id"></el-option>
+              </el-select>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="国籍" prop="country">
+              <el-input v-model="form.country" placeholder="如：CN" maxlength="8"></el-input>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row :gutter="12">
+          <el-col :span="12">
+            <el-form-item label="Rating">
+              <el-input-number v-model="form.rating" :min="0" :max="3" :step="0.01" :precision="2"
+                controls-position="right" style="width: 100%"></el-input-number>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="K/D">
+              <el-input-number v-model="form.kd" :min="0" :max="5" :step="0.01" :precision="2"
+                controls-position="right" style="width: 100%"></el-input-number>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row :gutter="12">
+          <el-col :span="12">
+            <el-form-item label="ADR">
+              <el-input-number v-model="form.adr" :min="0" :max="250" :step="0.1" :precision="1"
+                controls-position="right" style="width: 100%"></el-input-number>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="KAST">
+              <el-input-number v-model="form.kast" :min="0" :max="100" :step="0.1" :precision="1"
+                controls-position="right" style="width: 100%"></el-input-number>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-form-item label="地图数">
+          <el-input-number v-model="form.maps" :min="0" :max="9999" controls-position="right"
+            style="width: 160px"></el-input-number>
+        </el-form-item>
+      </el-form>
+      <template #footer>
+        <el-button @click="dialogVisible = false">取消</el-button>
+        <el-button type="primary" :loading="submitting" @click="submitPlayer">确定</el-button>
+      </template>
+    </el-dialog>
   </div>
 </template>
 
@@ -114,7 +190,15 @@ export default {
         minRating: '',
         players: [],
         teams: [],
-        loading: false
+        loading: false,
+        dialogVisible: false,
+        dialogTitle: '',
+        submitting: false,
+        form: {},
+        rules: {
+          nick: [{ required: true, message: '请填写选手游戏 ID', trigger: 'blur' }],
+          teamId: [{ required: true, message: '请选择所属战队', trigger: 'change' }]
+        }
       }
     },
   computed: {
@@ -163,6 +247,11 @@ export default {
       const t = this.teams.find(x => x.id === id)
       return t ? t.short : '?'
     },
+    //优先显示战队 logo，与比赛中心/选手资料风格统一
+    teamLogo(id) {
+      const t = this.teams.find(x => x.id === id)
+      return (t && t.logo) || ''
+    },
     badgeStyle(id) {
       const t = this.teams.find(x => x.id === id)
       const [c1, c2] = (t && t.color) || ['#555', '#222']
@@ -185,6 +274,63 @@ export default {
       if (rating >= 1.1) return 'good'
       if (rating >= 1.0) return 'ok'
       return 'poor'
+    },
+    /* ---------- 选手维护 ---------- */
+    emptyForm() {
+      // 数据指标默认留空，提交时后端按空值处理
+      return { id: null, nick: '', name: '', teamId: null, country: '', rating: null, kd: null, adr: null, kast: null, maps: null }
+    },
+    openAdd() {
+      this.dialogTitle = '新增选手'
+      this.form = this.emptyForm()
+      this.dialogVisible = true
+      this.resetValidate()
+    },
+    openEdit(row) {
+      this.dialogTitle = '编辑选手'
+      this.form = {
+        id: row.id,
+        nick: row.nick,
+        name: row.name || '',
+        teamId: row.teamId,
+        country: row.country || '',
+        rating: row.rating == null ? null : Number(row.rating),
+        kd: row.kd == null ? null : Number(row.kd),
+        adr: row.adr == null ? null : Number(row.adr),
+        kast: row.kast == null ? null : Number(row.kast),
+        maps: row.maps == null ? null : Number(row.maps)
+      }
+      this.dialogVisible = true
+      this.resetValidate()
+    },
+    resetValidate() {
+      this.$nextTick(() => {
+        if (this.$refs.formRef) this.$refs.formRef.clearValidate()
+      })
+    },
+    submitPlayer() {
+      if (this.submitting) return
+      this.$refs.formRef.validate(valid => {
+        if (!valid) return
+        this.submitting = true
+        const payload = { ...this.form, nick: this.form.nick.trim() }
+        const req = payload.id
+          ? this.putRequest('/esports/player', payload)
+          : this.postRequest('/esports/player', payload)
+        req.then(resp => {
+          if (resp) {
+            this.dialogVisible = false
+            this.loadData()
+          }
+        }).finally(() => { this.submitting = false })
+      })
+    },
+    removePlayer(row) {
+      this.$confirm(`确认删除选手「${row.nick}」吗？`, '提示', { type: 'warning' }).then(() => {
+        this.deleteRequest('/esports/player/' + row.id).then(resp => {
+          if (resp) this.loadData()
+        })
+      }).catch(() => {})
     }
   }
 }
@@ -239,6 +385,8 @@ export default {
 }
 .filter-search { width: 250px; }
 .filter-item { width: 160px; }
+/* 把新增/刷新按钮推到右侧 */
+.spacer { flex: 1; }
 .reset-btn {
   padding: 8px 16px;
   border-radius: 8px;
@@ -267,6 +415,12 @@ export default {
   color: #fff;
   text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
   flex-shrink: 0;
+  overflow: hidden;
+}
+.team-badge img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
 }
 
 .rank {

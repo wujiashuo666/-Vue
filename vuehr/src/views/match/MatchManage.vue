@@ -20,11 +20,17 @@
             <el-table-column label="赛制" width="70">
                 <template #default="scope">BO{{ scope.row.bo }}</template>
             </el-table-column>
-            <el-table-column label="对阵" min-width="220">
+            <el-table-column label="对阵" min-width="300">
                 <template #default="scope">
-                    <span class="team-name">{{ teamName(scope.row.team1Id) }}</span>
-                    <span class="vs">vs</span>
-                    <span class="team-name">{{ teamName(scope.row.team2Id) }}</span>
+                    <div class="vs-cell">
+                        <img v-if="teamLogo(scope.row.team1Id)" :src="teamLogo(scope.row.team1Id)" class="mini-logo"
+                            :alt="teamName(scope.row.team1Id)" />
+                        <span class="team-name">{{ teamName(scope.row.team1Id) }}</span>
+                        <span class="vs">VS</span>
+                        <img v-if="teamLogo(scope.row.team2Id)" :src="teamLogo(scope.row.team2Id)" class="mini-logo"
+                            :alt="teamName(scope.row.team2Id)" />
+                        <span class="team-name">{{ teamName(scope.row.team2Id) }}</span>
+                    </div>
                 </template>
             </el-table-column>
             <el-table-column label="状态" width="100">
@@ -87,7 +93,13 @@
                         <el-form-item label="战队 1" prop="team1Id">
                             <el-select v-model="form.team1Id" placeholder="请选择战队" filterable style="width: 100%">
                                 <el-option v-for="t in teams" :key="t.id" :label="t.name" :value="t.id"
-                                    :disabled="t.id === form.team2Id"></el-option>
+                                    :disabled="t.id === form.team2Id">
+                                    <div class="opt-team">
+                                        <img v-if="t.logo" :src="t.logo" class="opt-logo" :alt="t.name" />
+                                        <span class="opt-rank">#{{ t.worldRank }}</span>
+                                        <span>{{ t.name }}</span>
+                                    </div>
+                                </el-option>
                             </el-select>
                         </el-form-item>
                     </el-col>
@@ -95,9 +107,31 @@
                         <el-form-item label="战队 2" prop="team2Id">
                             <el-select v-model="form.team2Id" placeholder="请选择战队" filterable style="width: 100%">
                                 <el-option v-for="t in teams" :key="t.id" :label="t.name" :value="t.id"
-                                    :disabled="t.id === form.team1Id"></el-option>
+                                    :disabled="t.id === form.team1Id">
+                                    <div class="opt-team">
+                                        <img v-if="t.logo" :src="t.logo" class="opt-logo" :alt="t.name" />
+                                        <span class="opt-rank">#{{ t.worldRank }}</span>
+                                        <span>{{ t.name }}</span>
+                                    </div>
+                                </el-option>
                             </el-select>
                         </el-form-item>
+                    </el-col>
+                    <!-- 对阵预览：双方队标 + VS -->
+                    <el-col :span="24">
+                        <div class="vs-preview">
+                            <div class="vs-side">
+                                <img v-if="teamLogo(form.team1Id)" :src="teamLogo(form.team1Id)" :alt="teamName(form.team1Id)" />
+                                <div v-else class="vs-empty">待选</div>
+                                <span>{{ teamName(form.team1Id) }}</span>
+                            </div>
+                            <div class="vs-mid">VS</div>
+                            <div class="vs-side">
+                                <img v-if="teamLogo(form.team2Id)" :src="teamLogo(form.team2Id)" :alt="teamName(form.team2Id)" />
+                                <div v-else class="vs-empty">待选</div>
+                                <span>{{ teamName(form.team2Id) }}</span>
+                            </div>
+                        </div>
                     </el-col>
                     <el-col :span="24">
                         <el-form-item label="开始时间" prop="startTime">
@@ -240,6 +274,10 @@ export default {
             const t = this.teamMap.get(id)
             return t ? t.name : '未知战队'
         },
+        teamLogo(id) {
+            const t = this.teamMap.get(id)
+            return t ? t.logo : ''
+        },
         statusLabel(status) {
             return STATUS_META[status] ? STATUS_META[status].label : status
         },
@@ -368,6 +406,80 @@ export default {
     color: #8b949e;
 }
 .team-name { font-weight: 600; }
+.vs-cell {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+.mini-logo {
+    width: 22px;
+    height: 22px;
+    object-fit: contain;
+    border-radius: 3px;
+    background: rgba(255, 255, 255, 0.06);
+}
+/* 下拉里的战队选项 */
+.opt-team {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+.opt-logo {
+    width: 20px;
+    height: 20px;
+    object-fit: contain;
+}
+.opt-rank {
+    font-size: 11px;
+    color: #ff4655;
+    font-weight: 700;
+    min-width: 26px;
+}
+/* 对阵预览 */
+.vs-preview {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 24px;
+    padding: 14px 10px;
+    margin-bottom: 18px;
+    border: 1px solid #232b36;
+    border-radius: 10px;
+    background: linear-gradient(180deg, rgba(255, 70, 85, 0.06), rgba(255, 255, 255, 0.02));
+}
+.vs-side {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    width: 120px;
+    font-size: 13px;
+    font-weight: 600;
+}
+.vs-side img {
+    width: 58px;
+    height: 58px;
+    object-fit: contain;
+    filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.5));
+}
+.vs-empty {
+    width: 58px;
+    height: 58px;
+    border: 1px dashed #30363d;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+    color: #6e7681;
+    font-weight: 400;
+}
+.vs-mid {
+    font-size: 18px;
+    font-weight: 800;
+    color: #ff4655;
+    letter-spacing: 1px;
+}
 .vs {
     margin: 0 8px;
     font-size: 12px;

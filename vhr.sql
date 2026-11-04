@@ -1,4 +1,4 @@
-/*
+﻿/*
 SQLyog Ultimate v12.08 (32 bit)
 MySQL - 8.0.18 : Database - vhr
 *********************************************************************
@@ -262,7 +262,7 @@ CREATE TABLE `joblevel` (
 
 /*Data for the table `joblevel` */
 
-insert  into `joblevel`(`id`,`name`,`titleLevel`,`createDate`,`enabled`) values (9,'教授','正高级','2018-01-11 00:00:00',1),(10,'副教授','副高级','2018-01-11 21:19:20',1),(12,'助教','初级','2018-01-11 21:35:39',1),(13,'讲师','中级','2018-01-11 00:00:00',0),(14,'初级工程师','初级','2018-01-14 00:00:00',1),(15,'中级工程师66','中级','2018-01-14 00:00:00',1),(16,'高级工程师','副高级','2018-01-14 16:19:14',1),(17,'骨灰级工程师','正高级','2018-01-14 16:19:24',1);
+insert  into `joblevel`(`id`,`name`,`titleLevel`,`createDate`,`enabled`) values (9,'S级选手','现役顶级','2018-01-11 00:00:00',1),(10,'A级选手','一线主力','2018-01-11 21:19:20',1),(12,'B级选手','稳定轮换','2018-01-11 21:35:39',1),(13,'C级选手','二线阵容','2018-01-11 00:00:00',0),(14,'D级选手','替补席','2018-01-14 00:00:00',1),(15,'青训选手','培养期','2018-01-14 00:00:00',1),(16,'自由选手','未签约','2018-01-14 16:19:14',1),(17,'传奇选手','荣誉级','2018-01-14 16:19:24',1);
 
 /*Table structure for table `menu` */
 
@@ -286,7 +286,7 @@ CREATE TABLE `menu` (
 
 /*Data for the table `menu` */
 
-insert  into `menu`(`id`,`url`,`path`,`component`,`name`,`iconCls`,`keepAlive`,`requireAuth`,`parentId`,`enabled`) values (1,'/',NULL,NULL,'所有',NULL,NULL,NULL,NULL,1),(2,'/','/home','Home','员工资料','fa fa-user-circle-o',NULL,1,1,1),(3,'/','/home','Home','人事管理','fa fa-address-card-o',NULL,1,1,1),(4,'/','/home','Home','薪资管理','fa fa-money',NULL,1,1,1),(5,'/','/home','Home','统计管理','fa fa-bar-chart',NULL,1,1,1),(6,'/','/home','Home','系统管理','fa fa-windows',NULL,1,1,1),(7,'/employee/basic/**','/emp/basic','EmpBasic','基本资料',NULL,NULL,1,2,1),(8,'/employee/advanced/**','/emp/adv','EmpAdv','高级资料',NULL,NULL,1,2,1),(9,'/personnel/emp/**','/per/emp','PerEmp','员工资料',NULL,NULL,1,3,1),(10,'/personnel/ec/**','/per/ec','PerEc','员工奖惩',NULL,NULL,1,3,1),(11,'/personnel/train/**','/per/train','PerTrain','员工培训',NULL,NULL,1,3,1),(12,'/personnel/salary/**','/per/salary','PerSalary','员工调薪',NULL,NULL,1,3,1),(13,'/personnel/remove/**','/per/mv','PerMv','员工调动',NULL,NULL,1,3,1),(14,'/salary/sob/**','/sal/sob','SalSob','工资账套管理',NULL,NULL,1,4,1),(15,'/salary/sobcfg/**','/sal/sobcfg','SalSobCfg','员工账套设置',NULL,NULL,1,4,1),(16,'/salary/table/**','/sal/table','SalTable','工资表管理',NULL,NULL,1,4,1),(17,'/salary/month/**','/sal/month','SalMonth','月末处理',NULL,NULL,1,4,1),(18,'/salary/search/**','/sal/search','SalSearch','工资表查询',NULL,NULL,1,4,1),(19,'/statistics/all/**','/sta/all','StaAll','综合信息统计',NULL,NULL,1,5,1),(20,'/statistics/score/**','/sta/score','StaScore','员工积分统计',NULL,NULL,1,5,1),(21,'/statistics/personnel/**','/sta/pers','StaPers','人事信息统计',NULL,NULL,1,5,1),(22,'/statistics/recored/**','/sta/record','StaRecord','人事记录统计',NULL,NULL,1,5,1),(23,'/system/basic/**','/sys/basic','SysBasic','基础信息设置',NULL,NULL,1,6,1),(24,'/system/cfg/**','/sys/cfg','SysCfg','系统管理',NULL,NULL,1,6,1),(25,'/system/log/**','/sys/log','SysLog','操作日志管理',NULL,NULL,1,6,1),(26,'/system/hr/**','/sys/hr','SysHr','操作员管理',NULL,NULL,1,6,1),(27,'/system/data/**','/sys/data','SysData','备份恢复数据库',NULL,NULL,1,6,1),(28,'/system/init/**','/sys/init','SysInit','初始化数据库',NULL,NULL,1,6,1);
+insert  into `menu`(`id`,`url`,`path`,`component`,`name`,`iconCls`,`keepAlive`,`requireAuth`,`parentId`,`enabled`) values (1,'/',NULL,NULL,'所有',NULL,NULL,NULL,NULL,1),(2,'/','/home','Home','选手资料','fa fa-user-circle-o',NULL,1,1,1),(3,'/','/home','Home','选手管理','fa fa-address-card-o',NULL,1,1,1),(4,'/','/home','Home','薪资管理','fa fa-money',NULL,1,1,1),(5,'/','/home','Home','统计管理','fa fa-bar-chart',NULL,1,1,1),(6,'/','/home','Home','系统管理','fa fa-windows',NULL,1,1,1),(7,'/employee/basic/**','/player','EmpBasic','基本资料',NULL,NULL,1,2,1),(9,'/personnel/emp/**','/players','PerEmp','选手资料',NULL,NULL,1,3,1),(10,'/personnel/ec/**','/rewards','PerEc','选手奖惩',NULL,NULL,1,3,1),(11,'/personnel/train/**','/training','PerTrain','选手培训',NULL,NULL,1,3,1),(12,'/personnel/salary/**','/salary/history','PerSalary','选手调薪',NULL,NULL,1,3,1),(13,'/personnel/remove/**','/transfer','PerMv','选手调动',NULL,NULL,1,3,1),(14,'/salary/sob/**','/salary/plans','SalSob','薪资方案管理',NULL,NULL,1,4,1),(15,'/salary/sobcfg/**','/salary/setup','SalSobCfg','选手薪资设置',NULL,NULL,1,4,1),(18,'/salary/search/**','/salary/adjust','SalSearch','战绩调薪',NULL,NULL,1,4,1),(19,'/statistics/all/**','/stats/all','StaAll','综合信息统计',NULL,NULL,1,5,1),(20,'/statistics/score/**','/stats/score','StaScore','选手积分统计',NULL,NULL,1,5,1),(21,'/statistics/personnel/**','/stats/player','StaPers','选手信息统计',NULL,NULL,1,5,1),(22,'/statistics/recored/**','/stats/changelog','StaRecord','选手变动记录统计',NULL,NULL,1,5,1),(23,'/system/basic/**','/settings/basic','SysBasic','基础信息设置',NULL,NULL,1,6,1),(24,'/system/cfg/**','/settings/system','SysCfg','系统管理',NULL,NULL,1,6,1),(25,'/system/log/**','/settings/logs','SysLog','操作日志管理',NULL,NULL,1,6,1),(26,'/system/hr/**','/settings/operators','SysHr','操作员管理',NULL,NULL,1,6,1);
 
 /*Table structure for table `menu_role` */
 
@@ -305,7 +305,7 @@ CREATE TABLE `menu_role` (
 
 /*Data for the table `menu_role` */
 
-insert  into `menu_role`(`id`,`mid`,`rid`) values (161,7,3),(162,7,6),(163,9,6),(164,10,6),(165,11,6),(166,12,6),(167,13,6),(168,14,6),(169,15,6),(170,16,6),(171,17,6),(172,18,6),(173,19,6),(174,20,6),(175,21,6),(176,22,6),(177,23,6),(178,25,6),(179,26,6),(180,27,6),(181,28,6),(182,24,6),(247,7,4),(248,8,4),(249,11,4),(250,7,2),(251,8,2),(252,9,2),(253,10,2),(254,12,2),(255,13,2),(256,7,1),(257,8,1),(258,9,1),(259,10,1),(260,11,1),(261,12,1),(262,13,1),(263,14,1),(264,15,1),(265,16,1),(266,17,1),(267,18,1),(268,19,1),(269,20,1),(270,21,1),(271,22,1),(272,23,1),(273,24,1),(274,25,1),(275,26,1),(276,27,1),(277,28,1),(280,7,14),(281,8,14),(282,9,14);
+insert  into `menu_role`(`id`,`mid`,`rid`) values (161,7,3),(162,7,6),(163,9,6),(164,10,6),(165,11,6),(166,12,6),(167,13,6),(168,14,6),(169,15,6),(172,18,6),(173,19,6),(174,20,6),(175,21,6),(176,22,6),(177,23,6),(178,25,6),(179,26,6),(180,27,6),(181,28,6),(182,24,6),(247,7,4),(249,11,4),(250,7,2),(252,9,2),(253,10,2),(254,12,2),(255,13,2),(256,7,1),(258,9,1),(259,10,1),(260,11,1),(261,12,1),(262,13,1),(263,14,1),(264,15,1),(267,18,1),(268,19,1),(269,20,1),(270,21,1),(271,22,1),(272,23,1),(273,24,1),(274,25,1),(275,26,1),(276,27,1),(277,28,1),(280,7,14),(282,9,14);
 
 /*Table structure for table `msgcontent` */
 
@@ -423,7 +423,7 @@ CREATE TABLE `salary` (
 
 /*Data for the table `salary` */
 
-insert  into `salary`(`id`,`basicSalary`,`bonus`,`lunchSalary`,`trafficSalary`,`allSalary`,`pensionBase`,`pensionPer`,`createDate`,`medicalBase`,`medicalPer`,`accumulationFundBase`,`accumulationFundPer`,`name`) values (9,9000,4000,800,500,NULL,2000,0.07,'2018-01-24 00:00:00',2000,0.07,2000,0.07,'市场部工资账套'),(10,2000,2000,400,1000,NULL,2000,0.07,'2018-01-01 00:00:00',2000,0.07,2000,0.07,'人事部工资账套'),(13,20000,3000,500,500,NULL,4000,0.07,'2018-01-25 00:00:00',4000,0.07,4000,0.07,'运维部工资账套');
+insert  into `salary`(`id`,`basicSalary`,`bonus`,`lunchSalary`,`trafficSalary`,`allSalary`,`pensionBase`,`pensionPer`,`createDate`,`medicalBase`,`medicalPer`,`accumulationFundBase`,`accumulationFundPer`,`name`) values (9,9000,4000,800,500,NULL,2000,0.07,'2018-01-24 00:00:00',2000,0.07,2000,0.07,'S级主力合同'),(10,2000,2000,400,1000,NULL,2000,0.07,'2018-01-01 00:00:00',2000,0.07,2000,0.07,'青训培养合同'),(13,20000,3000,500,500,NULL,4000,0.07,'2018-01-25 00:00:00',4000,0.07,4000,0.07,'指挥位顶薪合同');
 
 /*Table structure for table `sysmsg` */
 
@@ -520,6 +520,7 @@ CREATE TABLE IF NOT EXISTS `es_team` (
   `world_rank` int DEFAULT NULL,
   `color1` varchar(16) DEFAULT NULL,
   `color2` varchar(16) DEFAULT NULL,
+  `logo` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
@@ -541,6 +542,9 @@ CREATE TABLE IF NOT EXISTS `es_player` (
 CREATE TABLE IF NOT EXISTS `es_tournament` (
   `id` int NOT NULL AUTO_INCREMENT,
   `name` varchar(128) NOT NULL,
+  `region` varchar(32) DEFAULT NULL,
+  `start_date` date DEFAULT NULL,
+  `end_date` date DEFAULT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
@@ -577,7 +581,100 @@ UPDATE `position` SET name='突破手' WHERE id=33;
 UPDATE `position` SET name='自由人' WHERE id=34;
 UPDATE `position` SET name='步枪手' WHERE id=36;
 UPDATE `position` SET name='教练' WHERE id=30;
--- 系统管理 → 战队管理
-INSERT INTO `menu` (`url`,`path`,`component`,`name`,`iconCls`,`keepAlive`,`requireAuth`,`parentId`,`enabled`)
-SELECT '/esports/team/**','/sys/team','SysTeam','战队管理','fa fa-shield',keepAlive,requireAuth,id,1 FROM `menu` WHERE `name`='系统管理' AND `parentId`=1;
-INSERT INTO `menu_role` (`mid`,`rid`) SELECT (SELECT id FROM `menu` WHERE `path`='/sys/team'), rid FROM `menu_role` WHERE mid=23;
+
+-- =============================================================
+-- CS 化清理（与 Flyway V10 等效）：
+-- 删除人事概念列与民族/政治面貌字典表
+-- =============================================================
+ALTER TABLE employee
+    DROP FOREIGN KEY employee_ibfk_4;
+ALTER TABLE employee
+    DROP FOREIGN KEY employee_ibfk_5;
+ALTER TABLE employee
+    DROP COLUMN idCard,
+    DROP COLUMN wedlock,
+    DROP COLUMN nationId,
+    DROP COLUMN politicId;
+DROP TABLE IF EXISTS nation;
+DROP TABLE IF EXISTS politicsstatus;
+
+-- =============================================================
+-- CS 电竞表结构（与 Flyway V3/V4/V5/V9 等效）
+-- =============================================================
+CREATE TABLE es_team (
+  id int NOT NULL AUTO_INCREMENT,
+  
+ame varchar(64) NOT NULL COMMENT '战队名称',
+  short_name varchar(16) DEFAULT NULL COMMENT '战队简称',
+  egion varchar(32) DEFAULT NULL COMMENT '所属赛区',
+  logo varchar(255) DEFAULT NULL COMMENT '战队图标',
+  color1 varchar(16) DEFAULT NULL COMMENT '主色',
+  color2 varchar(16) DEFAULT NULL COMMENT '副色',
+  world_rank int DEFAULT NULL COMMENT '世界排名',
+  PRIMARY KEY (id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='电竞战队';
+
+CREATE TABLE es_tournament (
+  id int NOT NULL AUTO_INCREMENT,
+  
+ame varchar(128) NOT NULL COMMENT '赛事名称',
+  egion varchar(32) DEFAULT NULL COMMENT '赛区',
+  start_date date DEFAULT NULL COMMENT '开始日期',
+  end_date date DEFAULT NULL COMMENT '结束日期',
+  PRIMARY KEY (id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='电竞赛事';
+
+CREATE TABLE es_match (
+  id int NOT NULL AUTO_INCREMENT,
+  	ournament_id int NOT NULL,
+  stage varchar(64) DEFAULT NULL COMMENT '阶段',
+  o int DEFAULT 1 COMMENT 'BO几',
+  	eam1_id int DEFAULT NULL,
+  	eam2_id int DEFAULT NULL,
+  status varchar(16) DEFAULT 'upcoming',
+  start_time datetime DEFAULT NULL,
+  PRIMARY KEY (id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='电竞比赛';
+
+CREATE TABLE es_match_map (
+  id int NOT NULL AUTO_INCREMENT,
+  match_id int NOT NULL,
+  map_order int NOT NULL DEFAULT 1,
+  map_name varchar(64) DEFAULT NULL,
+  score1 int DEFAULT NULL,
+  score2 int DEFAULT NULL,
+  live tinyint(1) DEFAULT 0,
+  PRIMARY KEY (id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='比赛地图比分';
+
+CREATE TABLE es_player (
+  id int NOT NULL AUTO_INCREMENT,
+  	eam_id int DEFAULT NULL,
+  
+ick varchar(64) NOT NULL COMMENT '游戏ID',
+  eal_name varchar(64) DEFAULT NULL,
+  country varchar(32) DEFAULT NULL,
+  ating decimal(4,2) DEFAULT NULL,
+  PRIMARY KEY (id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='电竞选手';
+
+CREATE TABLE es_tournament_progress (
+  id int NOT NULL AUTO_INCREMENT,
+  	ournament_id int NOT NULL COMMENT '赛事 id',
+  	eam_id int NOT NULL COMMENT '战队 id',
+  esult varchar(16) NOT NULL COMMENT 'advanced=晋级 / eliminated=淘汰',
+  updated_at timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (id),
+  UNIQUE KEY uk_tournament_team (	ournament_id, 	eam_id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='赛事晋级/淘汰标记';
+
+-- 操作日志（系统管理-日志页面）
+CREATE TABLE oplog (
+  id int NOT NULL AUTO_INCREMENT,
+  url varchar(255) DEFAULT NULL,
+  method varchar(16) DEFAULT NULL,
+  ip varchar(64) DEFAULT NULL,
+  uid int DEFAULT NULL,
+  ddtime timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='操作日志';

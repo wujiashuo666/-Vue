@@ -3,13 +3,10 @@
         <el-container class="outer">
             <el-header class="homeHeader">
                 <div class="brand">
-                    <span class="brand-mark">CS</span>
+                    <img src="/cs2_logo.png" class="brand-logo" alt="CS2">
                     <span class="title">职业选手管理系统</span>
                 </div>
                 <div class="header-right">
-                    <el-button link class="bell-btn" size="default" @click="goChat">
-                        <el-icon><Bell/></el-icon>
-                    </el-button>
                     <el-dropdown class="userInfo" @command="commandHandler">
                         <span class="el-dropdown-link">
                             {{user.name}}<i><img :src="user.userface" alt=""></i>
@@ -75,9 +72,6 @@
             });
         },
         methods: {
-            goChat() {
-                this.$router.push("/chat");
-            },
             commandHandler(cmd) {
                 if (cmd == 'logout') {
                     this.$confirm('此操作将注销登录, 是否继续?', '提示', {
@@ -150,18 +144,11 @@
         gap: 12px;
     }
 
-    .brand-mark {
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        width: 34px;
-        height: 34px;
-        border-radius: 9px;
-        background: linear-gradient(135deg, #ff4655, #ff8a00);
-        color: #fff;
-        font-weight: 800;
-        font-size: 14px;
-        letter-spacing: 0.5px;
+    /* CS2 官方字标为白底深字，反色+screen 混合在深色顶栏呈现为透明底白字 */
+    .brand-logo {
+        height: 22px;
+        filter: invert(1);
+        mix-blend-mode: screen;
     }
 
     .homeHeader .title {
@@ -175,14 +162,6 @@
         display: flex;
         align-items: center;
         gap: 12px;
-    }
-
-    .bell-btn {
-        color: #8b949e !important;
-        font-size: 18px;
-    }
-    .bell-btn:hover {
-        color: #ff4655 !important;
     }
 
     .el-aside {

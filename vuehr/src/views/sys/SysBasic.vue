@@ -1,9 +1,9 @@
 <template>
     <div>
         <el-tabs v-model="activeName" type="card">
-            <el-tab-pane label="部门管理" name="depmana"><DepMana></DepMana></el-tab-pane>
-            <el-tab-pane label="职位管理" name="posmana"><PosMana></PosMana></el-tab-pane>
-            <el-tab-pane label="职称管理" name="joblevelmana"><JobLevelMana></JobLevelMana></el-tab-pane>
+            <el-tab-pane label="战队管理" name="depmana"><DepMana></DepMana></el-tab-pane>
+            <el-tab-pane label="选手位置" name="posmana"><PosMana></PosMana></el-tab-pane>
+            <el-tab-pane label="选手等级" name="joblevelmana"><JobLevelMana></JobLevelMana></el-tab-pane>
             <el-tab-pane label="奖惩规则" name="ecmana"><EcMana></EcMana></el-tab-pane>
             <el-tab-pane label="权限组" name="permissmana"><PermissMana></PermissMana></el-tab-pane>
         </el-tabs>

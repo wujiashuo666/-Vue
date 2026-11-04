@@ -15,6 +15,15 @@ public class EsTeam implements Serializable {
     private Integer worldRank;
     private String color1;
     private String color2;
+    private String logo;
+
+    public String getLogo() {
+        return logo;
+    }
+
+    public void setLogo(String logo) {
+        this.logo = logo;
+    }
 
     public Integer getId() { return id; }
     public void setId(Integer id) { this.id = id; }

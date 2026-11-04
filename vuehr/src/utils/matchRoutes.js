@@ -3,6 +3,8 @@ const MatchList = () => import('../views/match/MatchList.vue')
 const TeamStats = () => import('../views/match/TeamStats.vue')
 const PlayerRating = () => import('../views/match/PlayerRating.vue')
 const MatchManage = () => import('../views/match/MatchManage.vue')
+const TournamentManage = () => import('../views/match/TournamentManage.vue')
+const MatchControl = () => import('../views/match/MatchControl.vue')
 
 /**
  * 赛事中心采用前端静态注册：菜单数据在 vhr.sql 的 menu 表中尚无对应记录，
@@ -12,41 +14,55 @@ const MatchManage = () => import('../views/match/MatchManage.vue')
 
 // 侧边栏展示用，结构与后端 menu 表下发的菜单保持一致
 export const matchMenu = {
-    path: '/match',
+    path: '/matchcenter',
     name: '比赛中心',
     iconCls: 'fa fa-trophy',
     children: [
-        { path: '/match/list', name: '比赛列表' },
-        { path: '/match/teams', name: '战队战绩' },
-        { path: '/match/players', name: '选手数据' },
-        { path: '/match/manage', name: '比赛管理' }
+        { path: '/matchcenter/matches', name: '比赛列表' },
+        { path: '/matchcenter/teams', name: '战队战绩' },
+        { path: '/matchcenter/stats', name: '选手数据' },
+        { path: '/matchcenter/tournaments', name: '赛事管理' },
+        { path: '/matchcenter/manage', name: '比赛管理' },
+        { path: '/matchcenter/control', name: '玩大手操纵比赛' }
     ]
 }
 
 // 路由记录，name 全局唯一；meta.menuName 供面包屑展示真实菜单名
 export const matchRoutes = [
     {
-        path: '/match/list',
+        path: '/matchcenter/matches',
         name: 'match_list',
         meta: { menuName: '比赛列表' },
         component: MatchList
     },
     {
-        path: '/match/teams',
+        path: '/matchcenter/teams',
         name: 'match_teams',
         meta: { menuName: '战队战绩' },
         component: TeamStats
     },
     {
-        path: '/match/players',
+        path: '/matchcenter/stats',
         name: 'match_players',
         meta: { menuName: '选手数据' },
         component: PlayerRating
     },
     {
-        path: '/match/manage',
+        path: '/matchcenter/tournaments',
+        name: 'match_tournaments',
+        meta: { menuName: '赛事管理' },
+        component: TournamentManage
+    },
+    {
+        path: '/matchcenter/manage',
         name: 'match_manage',
         meta: { menuName: '比赛管理' },
         component: MatchManage
+    },
+    {
+        path: '/matchcenter/control',
+        name: 'match_control',
+        meta: { menuName: '玩大手操纵比赛' },
+        component: MatchControl
     }
 ]
